@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import draggableComponent from "vuedraggable";
 
 const loading = ref(false)
 const schedule = ref({})
@@ -17,19 +18,36 @@ async function fetchData() {
 </script>
 
 <template>
-    <div class="schedule">
+    <div class="wrapper">
         <button @click="fetchData">Fetch</button>
-        <div v-if="schedule" class="schedule">
-            <div v-for="(session, key) in schedule.sessions" :key="key" class="session">
-                <div v-for="(thesis, key) in session.thesis" :key="key">
-                    <span class="author">{{ thesis.firstName }} {{ thesis.lastName }}</span>
-                    <span class="title">{{ thesis.title }}</span>
-                    <span class="supervisor">{{ thesis.supervisor.firstName }} {{ thesis.supervisor.lastName }}</span>
-                    <span class="reviewer">{{ thesis.reviewer.firstName }} {{ thesis.reviewer.lastName }}</span>
-                </div>
-            </div>
+        <div v-if="schedule">
+            <table v-for="(session, key) in schedule.sessions" :key="key">
+                <thead>
+                    <tr>
+                        <th>Author</th>
+                        <th>Title</th>
+                        <th>Supervisor</th>
+                        <th>Reviewer</th>
+                    </tr>
+                </thead>
+                <draggableComponent v-model="session.thesis" tag="tbody">
+                    <template #item="{ element }">
+                        <tr :key="element.id">
+                            <td>{{ element.firstName }} {{ element.lastName }}</td>
+                            <td>{{ element.title }}</td>
+                            <td>{{ element.supervisor.firstName }} {{ element.supervisor.lastName }}</td>
+                            <td>{{ element.reviewer.firstName }} {{ element.reviewer.lastName }}</td>
+                        </tr>
+                    </template>
+                </draggableComponent>
+            </table>
         </div>
     </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+th {
+    text-align: start;
+    font-weight: bold;
+}
+</style>
