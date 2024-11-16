@@ -6,7 +6,11 @@ export const handlers = [
             id: 0,
             sessions: [
                 {
-                    thesis: [
+                    id: 0,
+                    startTime: '2024-06-27T09:00',
+                    place: 'Raiņa bulvāris 19',
+                    room: '16',
+                    theses: [
                         {
                             firstName: 'Bob',
                             lastName: 'Smith',
@@ -31,6 +35,53 @@ export const handlers = [
                             reviewer: {
                                 firstName: 'Lo',
                                 lastName: 'Ballz',
+                            }
+                        }
+                    ]
+                },
+                {
+                    id: 1,
+                    startTime: '2024-06-27T12:00',
+                    place: 'Raiņa bulvāris 19',
+                    room: '16',
+                    theses: [
+                        {
+                            firstName: 'Brendan',
+                            lastName: 'Espinoza',
+                            title: 'Space tech software',
+                            supervisor: {
+                                firstName: 'Jhon',
+                                lastName: 'Johnston',
+                            },
+                            reviewer: {
+                                firstName: 'Wendy',
+                                lastName: 'Cordova',
+                            }
+                        },
+                        {
+                            firstName: 'Nicholas',
+                            lastName: 'Berger',
+                            title: 'Peer to peer multiplayer game',
+                            supervisor: {
+                                firstName: 'Cecilia',
+                                lastName: 'Tanner',
+                            },
+                            reviewer: {
+                                firstName: 'Usman',
+                                lastName: 'Harrell',
+                            }
+                        },
+                        {
+                            firstName: 'Evelyn',
+                            lastName: 'Dickson',
+                            title: 'Mobile app for pet owners',
+                            supervisor: {
+                                firstName: 'Lilli',
+                                lastName: 'Hanna',
+                            },
+                            reviewer: {
+                                firstName: 'Khalil',
+                                lastName: 'Chandler',
                             }
                         }
                     ]
