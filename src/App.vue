@@ -8,9 +8,8 @@ const schedule = ref({})
 async function fetchData() {
     try {
         loading.value = true;
-        const response = await fetch('/api/schedule')
-        const json = await response.json()
-        schedule.value = json
+        const response = await fetch('/api/solution').then(res => { return res.json()})
+        schedule.value = response
     } finally {
         loading.value = false
     }
