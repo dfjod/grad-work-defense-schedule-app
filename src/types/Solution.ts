@@ -2,9 +2,9 @@ import type Session from './Session'
 import type Person from './Person'
 
 export default interface Solution {
-    id: number
+    id: number | null
     name: string
-    score: string
+    score: string | null
     sessions: Session[]
     persons: Person[]
 }

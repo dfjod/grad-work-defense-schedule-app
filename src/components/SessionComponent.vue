@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type Session from '@/types/Session';
-import SessionSlot from './SessionSlot.vue';
+import SlotComponent from './SlotComponent.vue';
 
 defineProps<{
     session: Session
@@ -28,7 +28,7 @@ defineProps<{
                 </tr>
             </thead>
             <tbody>
-                <SessionSlot v-for="thesis of session.theses" :key="thesis.id" :thesis="thesis"/>
+                <SlotComponent v-for="thesis of session.theses" :key="thesis.id" :thesis="thesis"/>
             </tbody>
         </table>
     </div>
