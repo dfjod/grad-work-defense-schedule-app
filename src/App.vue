@@ -15,9 +15,16 @@ onMounted(async () => {
 </script>
 
 <template>
-    <SolutionListComponent v-if="solutionList.length > 0" :list="solutionList" @load-solution="loadSolution"/>
-    <SolutionComponent />
+    <div class="wrapper">
+        <SolutionListComponent v-if="solutionList.length > 0" :list="solutionList" @load-solution="loadSolution" />
+        <SolutionComponent class="solution" />
+    </div>
 </template>
 
 <style>
+.wrapper {
+    display: grid;
+    grid-template-columns: 20% 80%;
+    height: inherit;
+}
 </style>

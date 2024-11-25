@@ -29,3 +29,20 @@ const supervisor = computed<Person>(() => persons.value.filter(person => {
         <td>{{ reviewer.name }}</td>
     </tr>
 </template>
+
+<style scoped>
+td {
+    padding: 10px;
+    background-color: var(--gray);
+}
+
+td:first-child {
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+
+td:last-child {
+    border-bottom-right-radius: 10px;
+    border-top-right-radius: 10px;
+}
+</style>

@@ -17,3 +17,26 @@ const emit = defineEmits<{
         </div>
     </div>
 </template>
+
+<style scoped>
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: var(--light-gray);
+    border: none;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: var(--gray);
+    cursor: pointer;
+}
+
+.list {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+	padding: 10px;
+    border-right: 2px solid var(--gray);
+}
+</style>

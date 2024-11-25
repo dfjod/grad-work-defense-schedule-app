@@ -6,12 +6,26 @@ const { sessions, solutionLoaded } = useSolutionState()
 </script>
 
 <template>
-    <div class="solution-view">
-        <div v-if="!solutionLoaded()">
-            Select a solution from the list
-        </div>
-        <div v-else>
-            <SessionComponent v-for="session of sessions" :key="session.id" :session="session" />
-        </div>
+    <div v-if="!solutionLoaded()" class="not-selected">
+        Select a solution from the list
+    </div>
+    <div v-else class="selected">
+        <SessionComponent v-for="session of sessions" :key="session.id" :session="session" />
     </div>
 </template>
+
+<style scoped>
+.not-selected {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.selected {
+    display: flex;
+    padding: 10px;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+</style>
