@@ -5,6 +5,21 @@ import SlotComponent from './SlotComponent.vue';
 defineProps<{
     session: Session
 }>()
+
+const formatDate = (date: string) => {
+    const options: Intl.DateTimeFormatOptions = {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        hour: 'numeric',
+        minute: '2-digit'
+    }
+    const dateObj = new Date(date)
+    const dateFormatter = Intl.DateTimeFormat('lv', options)
+    const dateString = dateFormatter.format(dateObj)
+
+    return dateString.charAt(0).toUpperCase() + dateString.slice(1)
+}
 </script>
 
 <template>
@@ -12,7 +27,7 @@ defineProps<{
         <div class="meta">
             <h2 class="title">Session #{{ session.id }}</h2>
             <div class="details">
-                <div class="date">{{ session.startDate }}</div>
+                <div class="date">{{ formatDate(session.startDate) }}</div>
                 <div class="place">
                     <span>Room: {{ session.room }}</span>
                 </div>
