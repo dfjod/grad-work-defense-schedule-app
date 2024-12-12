@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import useSolutionState from '@/composables/useSolutionState';
 import SessionComponent from './SessionComponent.vue';
+import ToolbarComponent from './ToolbarComponent.vue';
 
-const { sessions, solutionLoaded } = useSolutionState()
+const { score, sessions, indictments, solutionLoaded, loadScore } = useSolutionState()
 </script>
 
 <template>
-    <div v-if="!solutionLoaded()" class="not-selected">
+    <div v-if="!solutionLoaded" class="not-selected">
         Select a solution from the list
     </div>
     <div v-else class="selected">
+        <ToolbarComponent :score="score" @load-score="loadScore" />
         <SessionComponent v-for="session of sessions" :key="session.id" :session="session" />
     </div>
 </template>

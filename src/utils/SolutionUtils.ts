@@ -16,7 +16,8 @@ export function transformSolution(fetchedSolution: SolutionJson): Solution {
         name: `Solution ${fetchedSolution.scheduleId}`,
         sessions: transformSessions(fetchedSolution.sessions),
         persons: transformPersons(fetchedSolution.persons),
-        score: fetchedSolution.score
+        score: fetchedSolution.score,
+        theses: transformThesisList(fetchedSolution.thesis)
     }
 
     return solution
@@ -46,7 +47,8 @@ function transformPersons(personsJson: PersonJson[]): Person[] {
         const person: Person = {
             id: personJson.personId,
             name: personJson.name,
-            timeConstraints: transformTimeConstraints(personJson.timeConstraints)
+            timeConstraints: transformTimeConstraints(personJson.timeConstraints),
+            indictments: []
         }
         persons.push(person)
     }
@@ -80,6 +82,7 @@ function transformThesisList(thesesJson: ThesisJson[]): Thesis[] {
             author: thesisJson.author,
             supervisor: thesisJson.supervisor,
             reviewer: thesisJson.reviewer,
+            indictments: []
         }
 
         theses.push(thesis)
