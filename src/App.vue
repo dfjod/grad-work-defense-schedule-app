@@ -1,14 +1,18 @@
 <script setup lang="ts">
 import { onMounted, ref, type Ref } from 'vue'
 import SolutionListComponent from './components/SolutionListComponent.vue'
-import type ListSchedule from '@/types/ListSchedule';
 import SolutionComponent from './components/SolutionComponent.vue';
-import fetchData from './utils/Fetch';
 import useSolution from './composables/useSolutionState'
 import ModalComponent from './components/ModalComponent.vue';
+import { type SolutionElement } from '@/types/app';
 
 const { loadSolution } = useSolution()
-const solutionList: Ref<ListSchedule[]> = ref([])
+
+// TODO: Implement local storage for solutions
+const solutionList: SolutionElement[] = [
+    { id: 1, title: 'Solution 1' },
+]
+
 const isCreationModalOpen: Ref<boolean> = ref(false)
 
 const toggleCreationModal = () => {
@@ -16,7 +20,6 @@ const toggleCreationModal = () => {
 }
 
 onMounted(async () => {
-    solutionList.value = await fetchData<ListSchedule[]>('/api/list')
 })
 </script>
 

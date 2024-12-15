@@ -2,8 +2,11 @@
 import useSolutionState from '@/composables/useSolutionState';
 import SessionComponent from './SessionComponent.vue';
 import ToolbarComponent from './ToolbarComponent.vue';
+import { computed } from 'vue';
 
-const { score, sessions, indictments, solutionLoaded, loadScore } = useSolutionState()
+const { id, score, sessions, loadScore } = useSolutionState()
+// TODO: Does this computed property belong here?
+const solutionLoaded = computed(() => id.value !== null)
 </script>
 
 <template>

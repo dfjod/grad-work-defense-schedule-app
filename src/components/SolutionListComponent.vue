@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type ListSchedule from '@/types/ListSchedule'
+import { type SolutionElement } from '@/types/app';
 import BaseButton from '@/components/BaseButton.vue';
 
 const props = defineProps<{
-  list: ListSchedule[]
+  list: SolutionElement[]
 }>()
 
 const emit = defineEmits<{

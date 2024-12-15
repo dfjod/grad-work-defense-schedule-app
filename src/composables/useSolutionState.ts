@@ -1,15 +1,12 @@
-import type Solution from "@/types/Solution";
-import type SolutionJson from "@/types/api/SolutionJson";
-import type Indictment from "@/types/Indictment";
-import { reactive, toRefs, shallowReadonly, computed } from "vue";
-import { transformSolution } from "@/utils/SolutionUtils";
-import fetchData from "@/utils/Fetch";
-import type IndictmentJson from "@/types/api/IndictmentJson";
+import { reactive, toRefs, shallowReadonly } from 'vue'
+import { type Solution } from '@/types/app'
+import mapper from '@/services/mapper'
+import api from '@/services/api'
 
-const solution = reactive<Solution>({
+let solution = reactive<Solution>({
     id: null,
-    name: "",
-    score: "",
+    name: '',
+    score: '',
     sessions: [],
     persons: [],
     theses: [],
@@ -19,53 +16,19 @@ export default () => {
     const { id, name, score, sessions, persons } = toRefs(solution)
 
     async function loadSolution(solutionId: number) {
-        const fetchedSolution = await fetchData<SolutionJson>(`/api/solution?id=${solutionId}`)
-        const transformedSolution = transformSolution(fetchedSolution)
-
-        solution.id = transformedSolution.id
-        solution.name = transformedSolution.name
-        solution.score = transformedSolution.score
-        solution.sessions = transformedSolution.sessions
-        solution.persons = transformedSolution.persons
+        const fetchedSolution = await api.solution(solutionId)
+        const mappedSolution = mapper.mapApiSolution(fetchedSolution)
+        solution.id = mappedSolution.id
+        solution.name = mappedSolution.name
+        solution.score = mappedSolution.score
+        solution.sessions = mappedSolution.sessions
+        solution.persons = mappedSolution.persons
     }
 
     // TODO: Implement checking if the solution is loaded
-    async function loadScore() {
-        const indictments = await fetchData<IndictmentJson[]>('/api/indictments?id=0')
+    async function loadScore() {}
 
-        for (const indictment of indictments) {
-            const type: string = indictment.indictedObjectClass
-
-            if (type === 'LoadBalancer') {
-                continue
-            }
-
-            const array = type === 'Person' ? solution.persons : solution.theses
-
-            const objectId = indictment.indictedObjectID
-            const object = array.find((obj) => obj.id === objectId)
-            if (object) {
-                const objectIndictment: Indictment = {
-                    id: indictment.indictedObjectID,
-                    class: indictment.indictedObjectClass,
-                    score: indictment.score,
-                    matchCount: indictment.matchCount,
-                    constraintMatches: [],
-                }
-
-                for (const constraintMatch of indictment.constraintMatches) {
-                    objectIndictment.constraintMatches.push({
-                        name: constraintMatch.constraintName,
-                        score: constraintMatch.score,
-                    })
-                }
-
-                object.indictments.push(objectIndictment)
-            }
-        }
-    }
-
-    const solutionLoaded = computed(() => solution.id !== null)
+    const solutionLoaded = () => solution.id !== null
 
     return {
         id: shallowReadonly(id),
