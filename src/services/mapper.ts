@@ -1,4 +1,6 @@
 import {
+    type ConstraintMatch as ConstraintMatchApi,
+    type Indictment as IndictmentApi,
     type Person as PersonApi,
     type Session as SessionApi,
     type SolutionResponse,
@@ -7,6 +9,8 @@ import {
 } from '@/types/api'
 
 import {
+    type ConstraintMatch,
+    type Indictment,
     type Person,
     type Session,
     type Solution,
@@ -24,10 +28,43 @@ export default {
             persons: mapApiPersons(fetchedSolution.persons),
             score: fetchedSolution.score,
             theses: mapApiThesisList(fetchedSolution.thesis),
+            indictments: [],
         }
 
         return solution
     },
+
+    mapApiIndictments(indictmentsApi: IndictmentApi[]): Indictment[] {
+        const indictments: Indictment[] = []
+
+        for (const indictmentApi of indictmentsApi) {
+            const indictment: Indictment = {
+                id: indictmentApi.indictedObjectID,
+                class: indictmentApi.indictedObjectClass,
+                score: indictmentApi.score,
+                matchCount: indictmentApi.matchCount,
+                constraintMatches: mapApiConstraintMatches(indictmentApi.constraintMatches),
+            }
+            indictments.push(indictment)
+        }
+
+        return indictments
+    }
+}
+
+function mapApiConstraintMatches(constraintMatchesApi: ConstraintMatchApi[]): ConstraintMatch[] {
+    const constraintMatches: ConstraintMatch[] = []
+
+    for (const constraintMatchApi of constraintMatchesApi) {
+        const constraintMatch: ConstraintMatch = {
+            name: constraintMatchApi.constraintName,
+            score: constraintMatchApi.score,
+        }
+
+        constraintMatches.push(constraintMatch)
+    }
+
+    return constraintMatches
 }
 
 function mapApiSessions(sessionsApi: SessionApi[]): Session[] {

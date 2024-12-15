@@ -67,7 +67,7 @@ export interface Indictment {
     constraintMatches: ConstraintMatch[]
 }
 
-interface ConstraintMatch {
+export interface ConstraintMatch {
     constraintName: string
     score: string
 }

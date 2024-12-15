@@ -3,17 +3,18 @@ import { type Solution } from '@/types/app'
 import mapper from '@/services/mapper'
 import api from '@/services/api'
 
-let solution = reactive<Solution>({
+const solution = reactive<Solution>({
     id: null,
     name: '',
     score: '',
     sessions: [],
     persons: [],
     theses: [],
+    indictments: [],
 })
 
 export default () => {
-    const { id, name, score, sessions, persons } = toRefs(solution)
+    const { id, name, score, sessions, persons, indictments } = toRefs(solution)
 
     async function loadSolution(solutionId: number) {
         const fetchedSolution = await api.solution(solutionId)
@@ -25,8 +26,15 @@ export default () => {
         solution.persons = mappedSolution.persons
     }
 
-    // TODO: Implement checking if the solution is loaded
-    async function loadScore() {}
+    async function loadIndictments() {
+        if (solution.id !== null) {
+            const fetchIndictments = await api.indictments(solution.id)
+            const mappedIndictments = mapper.mapApiIndictments(fetchIndictments)
+            solution.indictments = mappedIndictments
+        } else {
+            console.error('Solution not loaded')
+        }
+    }
 
     const solutionLoaded = () => solution.id !== null
 
@@ -36,8 +44,9 @@ export default () => {
         score: shallowReadonly(score),
         persons: shallowReadonly(persons),
         sessions: shallowReadonly(sessions),
+        indictments: shallowReadonly(indictments),
         loadSolution,
-        loadScore,
+        loadIndictments,
         solutionLoaded,
     }
 }

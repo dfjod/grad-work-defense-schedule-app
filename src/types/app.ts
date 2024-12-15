@@ -5,6 +5,7 @@ export interface Solution {
     sessions: Session[]
     persons: Person[]
     theses: Thesis[]
+    indictments: Indictment[]
 }
 
 export interface Session {
@@ -44,7 +45,7 @@ export interface Indictment {
     matchCount: number
     constraintMatches: ConstraintMatch[]
 }
-interface ConstraintMatch {
+export interface ConstraintMatch {
     name: string
     score: string
 }
