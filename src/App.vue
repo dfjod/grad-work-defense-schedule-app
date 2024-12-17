@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { onMounted, ref, type Ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import SolutionListComponent from './components/SolutionListComponent.vue'
 import SolutionComponent from './components/SolutionComponent.vue';
 import useSolution from './composables/useSolutionState'
-import ModalComponent from './components/ModalComponent.vue';
-import { type SolutionElement } from '@/types/app';
+import { type Solution, type SolutionElement } from '@/types/app';
+import CreationForm from '@/components/CreationForm.vue';
 
 const { loadSolution } = useSolution()
 
@@ -13,10 +13,15 @@ const solutionList: SolutionElement[] = [
     { id: 1, title: 'Solution 1' },
 ]
 
-const isCreationModalOpen: Ref<boolean> = ref(false)
+const isCreationModalOpen = ref<boolean>(false)
 
 const toggleCreationModal = () => {
     isCreationModalOpen.value = !isCreationModalOpen.value
+}
+
+const handleSolutionCreation = (solution: Solution) => {
+    console.log(solution)
+    toggleCreationModal()
 }
 
 onMounted(async () => {
@@ -29,7 +34,7 @@ onMounted(async () => {
             @creation-modal-open="toggleCreationModal" />
         <SolutionComponent class="solution" />
     </div>
-    <ModalComponent v-if="isCreationModalOpen" @close-modal="toggleCreationModal"/>
+    <CreationForm v-if="isCreationModalOpen" @close-modal="toggleCreationModal" @submit="handleSolutionCreation"/>
 </template>
 
 <style>

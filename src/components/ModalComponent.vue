@@ -28,8 +28,9 @@ onClickOutside(target, () => emit('closeModal'))
   background-color: var(--transparent-dark);
 }
 .modal-container {
-  width: 300px;
-  margin: 150px auto;
+  width: calc(100% - var(--modal-margin-left-right) * 2);
+  height: calc(100vh - var(--modal-margin-top-bottom) * 2);
+  margin: var(--modal-margin-top-bottom) var(--modal-margin-left-right);
   padding: 20px 30px;
   background-color: white;
   border-radius: 2px;

@@ -7,6 +7,9 @@
     --light-green: #66e066;
     --transparent-dark: rgba(0, 0, 0, 0.5);
     --transparent-light-dark: rgba(0, 0, 0, 0.33);
+
+    --modal-margin-top-bottom: 55px;
+    --modal-margin-left-right: 25px;
 }
 
 html {
