@@ -46,6 +46,21 @@ export default () => {
         return JSON.stringify(solution)
     }
 
+    function exportSolution() {
+        if (!solutionLoaded()) {
+            console.error('Solution not loaded')
+            return
+        }
+
+        const fileData = serializeSolution()
+        const blob = new Blob([fileData], { type: 'text/plain' })
+        const url = URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.download = `${solution.name}.json`
+        link.href = url
+        link.click()
+    }
+
     return {
         id: shallowReadonly(id),
         name: shallowReadonly(name),
@@ -57,6 +72,6 @@ export default () => {
         loadSolutionApi,
         loadIndictments,
         solutionLoaded,
-        serializeSolution
+        exportSolution
     }
 }

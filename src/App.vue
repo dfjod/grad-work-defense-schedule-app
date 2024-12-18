@@ -24,6 +24,9 @@ const handleImprot = (solution: Solution) => {
     toggleCreationModal()
 }
 
+const handleExport = () => {
+    useSolution().exportSolution()
+}
 // onMounted(async () => {
 //     await loadSolutionApi(1)
 //     console.log(serializeSolution())
@@ -33,7 +36,7 @@ const handleImprot = (solution: Solution) => {
 <template>
     <div class="wrapper">
         <SolutionListComponent :list="solutionList" @load-solution="loadSolution"
-            @creation-modal-open="toggleCreationModal" />
+            @import-modal-open="toggleCreationModal" @export-solution="handleExport"/>
         <SolutionComponent class="solution" />
     </div>
     <ImportForm v-if="isCreationModalOpen" @close-modal="toggleCreationModal" @submit="handleImprot"/>

@@ -9,15 +9,20 @@ const props = defineProps<{
 
 const emit = defineEmits<{
     loadSolution: [id: number]
-    creationModalOpen: []
+    importModalOpen: []
+    exportSolution: []
 }>()
 
 function handleLoad(id: number) {
     emit('loadSolution', id)
 }
 
-function handleCreate() {
-    emit('creationModalOpen')
+function handleImport() {
+    emit('importModalOpen')
+}
+
+function handleExport() {
+    emit('exportSolution')
 }
 
 const solutionsAvailable = computed(() => props.list.length > 0)
@@ -25,7 +30,8 @@ const solutionsAvailable = computed(() => props.list.length > 0)
 
 <template>
     <div class="list">
-        <BaseButton @click="handleCreate" color="green">Import a solution</BaseButton>
+        <BaseButton @click="handleImport" color="green">Import a solution</BaseButton>
+        <BaseButton @click="handleExport" color="orange">Export a solution</BaseButton>
         <div v-if="solutionsAvailable">
             <div v-for="schedule in props.list" :key="schedule.id">
                 <BaseButton @click="handleLoad(schedule.id)">{{ schedule.title }}</BaseButton>
