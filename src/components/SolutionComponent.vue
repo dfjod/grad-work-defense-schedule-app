@@ -2,20 +2,23 @@
 import useSolutionState from '@/composables/useSolutionState';
 import SessionComponent from './SessionComponent.vue';
 import ToolbarComponent from './ToolbarComponent.vue';
-import { computed } from 'vue';
 
-const { id, score, sessions, loadScore } = useSolutionState()
+const { score, sessions, solutionLoaded, solved } = useSolutionState()
 // TODO: Does this computed property belong here?
-const solutionLoaded = computed(() => id.value !== null)
 </script>
 
 <template>
-    <div v-if="!solutionLoaded" class="not-selected">
-        Select a solution from the list
+    <div v-if="!solutionLoaded()" class="not-selected">
+        Import a solution to get started
     </div>
     <div v-else class="selected">
         <ToolbarComponent :score="score" @load-score="loadScore" />
-        <SessionComponent v-for="session of sessions" :key="session.id" :session="session" />
+        <div v-if="!solved" class="not-selected">
+            Press Solve to see the solution
+        </div>
+        <div v-else class="session-wrapper">
+            <SessionComponent v-for="session of sessions" :key="session.id" :session="session" />
+        </div>
     </div>
 </template>
 
@@ -24,6 +27,7 @@ const solutionLoaded = computed(() => id.value !== null)
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-grow: 1;
 }
 
 .selected {
@@ -31,6 +35,9 @@ const solutionLoaded = computed(() => id.value !== null)
     padding: 10px;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
+}
+
+.session-wrapper {
+    margin-top: 20px;
 }
 </style>

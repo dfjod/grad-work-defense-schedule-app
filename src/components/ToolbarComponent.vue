@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import BaseButton from '@/components/BaseButton.vue';
+import SolutionTitle from '@/components/SolutionTitle.vue';
 
 const props = defineProps<{
     score: string
@@ -26,6 +27,9 @@ const scoreLoaded = computed(() => {
                 Score: <strong>{{ props.score }}</strong>
             </div>
         </div>
+        <div class="middle">
+            <SolutionTitle />
+        </div>
         <div class="right">
             <BaseButton @click="handleLoad">Load Score</BaseButton>
         </div>
@@ -39,7 +43,7 @@ const scoreLoaded = computed(() => {
     width: 100%;
 }
 
-.left, .right {
+.left, .middle, .right {
     display: flex;
     align-items: center;
 }

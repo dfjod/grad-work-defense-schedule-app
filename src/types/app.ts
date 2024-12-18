@@ -1,5 +1,6 @@
 export interface Solution {
     id: number | null
+    solved: boolean
     name: string
     score: string
     sessions: Session[]

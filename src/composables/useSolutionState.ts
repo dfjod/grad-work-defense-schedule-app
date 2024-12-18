@@ -5,6 +5,7 @@ import api from '@/services/api'
 
 const solution = reactive<Solution>({
     id: null,
+    solved: false,
     name: '',
     score: '',
     sessions: [],
@@ -14,7 +15,7 @@ const solution = reactive<Solution>({
 })
 
 export default () => {
-    const { id, name, score, sessions, persons, indictments } = toRefs(solution)
+    const { id, name, score, sessions, persons, indictments, solved } = toRefs(solution)
 
     function loadSolution(s: Solution) {
         solution.id = s.id
@@ -61,6 +62,10 @@ export default () => {
         link.click()
     }
 
+    function changeName(newName: string) {
+        solution.name = newName
+    }
+
     return {
         id: shallowReadonly(id),
         name: shallowReadonly(name),
@@ -68,10 +73,12 @@ export default () => {
         persons: shallowReadonly(persons),
         sessions: shallowReadonly(sessions),
         indictments: shallowReadonly(indictments),
+        solved: shallowReadonly(solved),
         loadSolution,
         loadSolutionApi,
         loadIndictments,
         solutionLoaded,
-        exportSolution
+        exportSolution,
+        changeName
     }
 }
