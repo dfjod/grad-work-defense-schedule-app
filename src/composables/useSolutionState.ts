@@ -16,14 +16,18 @@ const solution = reactive<Solution>({
 export default () => {
     const { id, name, score, sessions, persons, indictments } = toRefs(solution)
 
-    async function loadSolution(solutionId: number) {
+    function loadSolution(s: Solution) {
+        solution.id = s.id
+        solution.name = s.name
+        solution.score = s.score
+        solution.sessions = s.sessions
+        solution.persons = s.persons
+    }
+
+    async function loadSolutionApi(solutionId: number) {
         const fetchedSolution = await api.solution(solutionId)
         const mappedSolution = mapper.mapApiSolution(fetchedSolution)
-        solution.id = mappedSolution.id
-        solution.name = mappedSolution.name
-        solution.score = mappedSolution.score
-        solution.sessions = mappedSolution.sessions
-        solution.persons = mappedSolution.persons
+        loadSolution(mappedSolution)
     }
 
     async function loadIndictments() {
@@ -38,6 +42,10 @@ export default () => {
 
     const solutionLoaded = () => solution.id !== null
 
+    function serializeSolution(): string {
+        return JSON.stringify(solution)
+    }
+
     return {
         id: shallowReadonly(id),
         name: shallowReadonly(name),
@@ -46,7 +54,9 @@ export default () => {
         sessions: shallowReadonly(sessions),
         indictments: shallowReadonly(indictments),
         loadSolution,
+        loadSolutionApi,
         loadIndictments,
         solutionLoaded,
+        serializeSolution
     }
 }

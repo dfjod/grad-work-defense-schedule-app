@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { type SolutionElement } from '@/types/app';
 import BaseButton from '@/components/BaseButton.vue';
+import { computed } from 'vue';
 
 const props = defineProps<{
   list: SolutionElement[]
@@ -18,13 +19,17 @@ function handleLoad(id: number) {
 function handleCreate() {
     emit('creationModalOpen')
 }
+
+const solutionsAvailable = computed(() => props.list.length > 0)
 </script>
 
 <template>
     <div class="list">
-        <BaseButton @click="handleCreate" color="green">Create New Solution</BaseButton>
-        <div v-for="schedule in props.list" :key="schedule.id">
-            <BaseButton @click="handleLoad(schedule.id)">{{ schedule.title }}</BaseButton>
+        <BaseButton @click="handleCreate" color="green">Import a solution</BaseButton>
+        <div v-if="solutionsAvailable">
+            <div v-for="schedule in props.list" :key="schedule.id">
+                <BaseButton @click="handleLoad(schedule.id)">{{ schedule.title }}</BaseButton>
+            </div>
         </div>
     </div>
 </template>

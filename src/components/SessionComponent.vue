@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type Session from '@/types/Session';
+import { type Session } from '@/types/app';
 import SlotComponent from './SlotComponent.vue';
 
 defineProps<{
