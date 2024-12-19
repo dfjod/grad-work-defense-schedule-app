@@ -12,7 +12,7 @@ const { score, sessions, solutionLoaded, solved } = useSolutionState()
         Import a solution to get started
     </div>
     <div v-else class="selected">
-        <ToolbarComponent :score="score" @load-score="loadScore" />
+        <ToolbarComponent :score="score" />
         <div v-if="!solved" class="not-selected">
             Press Solve to see the solution
         </div>

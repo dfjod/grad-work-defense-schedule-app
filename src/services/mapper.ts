@@ -3,6 +3,7 @@ import {
     type Indictment as IndictmentApi,
     type Person as PersonApi,
     type Session as SessionApi,
+    type SolutionRequest,
     type SolutionResponse,
     type Thesis as ThesisApi,
     type TimeConstraint as TimeConstraintApi,
@@ -22,6 +23,7 @@ export default {
     mapApiSolution(fetchedSolution: SolutionResponse): Solution {
         const solution: Solution = {
             id: fetchedSolution.scheduleId,
+            solved: true,
             // Temporary naming solution
             name: `Solution ${fetchedSolution.scheduleId}`,
             sessions: mapApiSessions(fetchedSolution.sessions),
@@ -49,6 +51,19 @@ export default {
         }
 
         return indictments
+    },
+
+    mapAppSolution(solution: Solution): SolutionRequest {
+        return {
+            scheduleId: solution.id,
+            persons: mapAppPersons(solution.persons),
+            sessions: mapAppSessions(solution.sessions),
+            thesis: mapAppThesisList(solution.theses),
+            score: null,
+            properties: {
+                sessionSize: 0
+            }
+        }
     }
 }
 
@@ -133,4 +148,47 @@ function mapApiThesisList(thesesApi: ThesisApi[]): Thesis[] {
     }
 
     return theses
+}
+
+
+
+function mapAppSessions(sessions: Session[]): SessionApi[] {
+    return sessions.map(session => ({
+        sessionId: session.id,
+        startingAt: session.startDate,
+        slotDurationMinutes: session.slotDuration,
+        thesisList: [],
+        room: session.room,
+    }))
+}
+
+function mapAppPersons(persons: Person[]): PersonApi[] {
+    return persons.map(person => ({
+        personId: person.id,
+        name: person.name,
+        timeConstraints: mapAppTimeConstraints(person.timeConstraints),
+    }))
+}
+
+function mapAppTimeConstraints(timeConstraints: TimeConstraint[]): TimeConstraintApi[] {
+    return timeConstraints.map(timeConstraint => ({
+        timeConstraintId: timeConstraint.id,
+        from: timeConstraint.from,
+        to: timeConstraint.to,
+    }))
+}
+
+function mapAppThesisList(theses: Thesis[]): ThesisApi[] {
+    return theses.map(thesis => ({
+        thesisId: thesis.id,
+        title: thesis.title,
+        author: thesis.author,
+        supervisor: thesis.supervisor,
+        reviewer: thesis.reviewer,
+        session: null,
+        previous: null,
+        next: null,
+        startsAt: null,
+        cascadeStartsAt: null,
+    }))
 }

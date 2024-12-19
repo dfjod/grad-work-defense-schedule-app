@@ -3,7 +3,7 @@ export interface SolutionRequest {
     persons: Person[]
     sessions: Session[]
     thesis: Thesis[]
-    score: Score
+    score: string | null
     properties: Properties
 }
 
@@ -52,11 +52,11 @@ export interface Thesis {
     author: number
     supervisor: number
     reviewer: number
-    session: number
-    previous: number
-    next: number
-    startsAt: string
-    cascadeStartsAt: string
+    session: number | null
+    previous: number | null
+    next: number | null
+    startsAt: string | null
+    cascadeStartsAt: string | null
 }
 
 export interface Indictment {

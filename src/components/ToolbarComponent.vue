@@ -2,18 +2,13 @@
 import { computed } from 'vue'
 import BaseButton from '@/components/BaseButton.vue';
 import SolutionTitle from '@/components/SolutionTitle.vue';
+import useSolutionState from '@/composables/useSolutionState';
 
 const props = defineProps<{
     score: string
 }>()
 
-const emit = defineEmits<{
-    (e: 'loadScore'): void
-}>()
-
-function handleLoad() {
-    emit('loadScore')
-}
+const { solveSolution, loadSolutionApi } = useSolutionState()
 
 const scoreLoaded = computed(() => {
     return props.score !== ""
@@ -31,7 +26,8 @@ const scoreLoaded = computed(() => {
             <SolutionTitle />
         </div>
         <div class="right">
-            <BaseButton @click="handleLoad">Load Score</BaseButton>
+            <BaseButton @click="solveSolution" color="green">Solve</BaseButton>
+            <BaseButton @click="loadSolutionApi" color="gray">Load</BaseButton>
         </div>
     </div>
 </template>

@@ -19,14 +19,20 @@ export default () => {
 
     function loadSolution(s: Solution) {
         solution.id = s.id
+        solution.solved = s.solved
         solution.name = s.name
         solution.score = s.score
         solution.sessions = s.sessions
         solution.persons = s.persons
+        solution.theses = s.theses
     }
 
-    async function loadSolutionApi(solutionId: number) {
-        const fetchedSolution = await api.solution(solutionId)
+    async function loadSolutionApi() {
+        if (solution.id === null) {
+            console.error('Solution ID is null')
+            return
+        }
+        const fetchedSolution = await api.solution(solution.id)
         const mappedSolution = mapper.mapApiSolution(fetchedSolution)
         loadSolution(mappedSolution)
     }
@@ -36,6 +42,15 @@ export default () => {
             const fetchIndictments = await api.indictments(solution.id)
             const mappedIndictments = mapper.mapApiIndictments(fetchIndictments)
             solution.indictments = mappedIndictments
+        } else {
+            console.error('Solution not loaded')
+        }
+    }
+
+    async function solveSolution() {
+        if (solution.id !== null) {
+            const requestObj = mapper.mapAppSolution(solution)
+            await api.solve(requestObj)
         } else {
             console.error('Solution not loaded')
         }
@@ -79,6 +94,7 @@ export default () => {
         loadIndictments,
         solutionLoaded,
         exportSolution,
-        changeName
+        changeName,
+        solveSolution
     }
 }
