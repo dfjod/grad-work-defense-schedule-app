@@ -24,7 +24,9 @@ export default () => {
         solution.score = s.score
         solution.sessions = s.sessions
         solution.persons = s.persons
-        solution.theses = s.theses
+        if (s.theses !== null) {
+            solution.theses = s.theses
+        }
     }
 
     async function loadSolutionApi() {
@@ -32,19 +34,25 @@ export default () => {
             console.error('Solution ID is null')
             return
         }
+
         const fetchedSolution = await api.solution(solution.id)
         const mappedSolution = mapper.mapApiSolution(fetchedSolution)
+
         loadSolution(mappedSolution)
     }
 
     async function loadIndictments() {
-        if (solution.id !== null) {
-            const fetchIndictments = await api.indictments(solution.id)
-            const mappedIndictments = mapper.mapApiIndictments(fetchIndictments)
-            solution.indictments = mappedIndictments
-        } else {
+        if (solution.id === null) {
             console.error('Solution not loaded')
+            return
         }
+
+        const fetchIndictments = await api.indictments(solution.id)
+        const mappedIndictments = mapper.mapApiIndictments(fetchIndictments)
+
+        solution.indictments = mappedIndictments
+
+        distributeIndictments()
     }
 
     async function solveSolution() {
@@ -81,6 +89,23 @@ export default () => {
         solution.name = newName
     }
 
+    function distributeIndictments() {
+        if (solution.theses === null) {
+            console.error("Theses are not loaded")
+            return
+        }
+        solution.persons.forEach(person => {
+            person.indictments = solution.indictments.filter(i => i.class === 'Person' && i.id === person.id)
+        })
+        solution.theses.forEach(thesis => {
+            thesis.indictments = solution.indictments.filter(i => i.class === 'Thesis' && i.id === thesis.id)
+        })
+    }
+
+    function printSolution() {
+        console.log(solution)
+    }
+
     return {
         id: shallowReadonly(id),
         name: shallowReadonly(name),
@@ -95,6 +120,7 @@ export default () => {
         solutionLoaded,
         exportSolution,
         changeName,
-        solveSolution
+        solveSolution,
+        printSolution,
     }
 }

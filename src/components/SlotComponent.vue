@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import type Thesis from '@/types/Thesis';
-import type Person from '@/types/Person';
+import { type Thesis, type Person } from '@/types/app';
 import useSolutionState from '@/composables/useSolutionState';
 import { computed } from 'vue';
+import { ref } from 'vue';
 
 const props = defineProps<{
     thesis: Thesis
+    // indictments: Indictment[]
 }>()
 
 const { persons } = useSolutionState()
@@ -19,10 +20,14 @@ const reviewer = computed<Person>(() => persons.value.filter(person => {
 const supervisor = computed<Person>(() => persons.value.filter(person => {
     return person.id === props.thesis.supervisor
 })[0])
+
+const showIndictments = ref<boolean>(false)
 </script>
 
 <template>
-    <tr>
+    <div v-show="showIndictments">
+    </div>
+    <tr @mouseover="showIndictments = true" @mouseleave="showIndictments = false">
         <td>{{ author.name }}</td>
         <td>{{ thesis.title }}</td>
         <td>{{ supervisor.name }}</td>

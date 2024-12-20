@@ -8,7 +8,7 @@ const props = defineProps<{
     score: string
 }>()
 
-const { solveSolution, loadSolutionApi } = useSolutionState()
+const { solveSolution, loadSolutionApi, loadIndictments, printSolution } = useSolutionState()
 
 const scoreLoaded = computed(() => {
     return props.score !== ""
@@ -28,6 +28,8 @@ const scoreLoaded = computed(() => {
         <div class="right">
             <BaseButton @click="solveSolution" color="green">Solve</BaseButton>
             <BaseButton @click="loadSolutionApi" color="gray">Load</BaseButton>
+            <BaseButton @click="loadIndictments" color="gray">Indictments</BaseButton>
+            <BaseButton @click="printSolution" color="gray">Print</BaseButton>
         </div>
     </div>
 </template>

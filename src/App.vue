@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
 import SolutionListComponent from './components/SolutionListComponent.vue'
 import SolutionComponent from './components/SolutionComponent.vue';
 import useSolution from './composables/useSolutionState'
@@ -27,19 +27,15 @@ const handleImprot = (solution: Solution) => {
 const handleExport = () => {
     useSolution().exportSolution()
 }
-// onMounted(async () => {
-//     await loadSolutionApi(1)
-//     console.log(serializeSolution())
-// })
 </script>
 
 <template>
     <div class="wrapper">
-        <SolutionListComponent :list="solutionList" @load-solution="loadSolution"
-            @import-modal-open="toggleCreationModal" @export-solution="handleExport"/>
+        <SolutionListComponent :list="solutionList" @import-modal-open="toggleCreationModal"
+            @export-solution="handleExport" />
         <SolutionComponent class="solution" />
     </div>
-    <ImportForm v-if="isCreationModalOpen" @close-modal="toggleCreationModal" @submit="handleImprot"/>
+    <ImportForm v-if="isCreationModalOpen" @close-modal="toggleCreationModal" @submit="handleImprot" />
 </template>
 
 <style>

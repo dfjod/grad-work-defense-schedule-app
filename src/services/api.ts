@@ -11,7 +11,6 @@ const apiClient = axios.create({
 export default {
     async solve(data: SolutionRequest) {
         const requestJson = JSON.stringify(data)
-        console.log(requestJson)
         return apiClient.post('/defsched/solve', requestJson).then((response) => console.log(response))
     },
 

@@ -5,7 +5,7 @@ export interface Solution {
     score: string
     sessions: Session[]
     persons: Person[]
-    theses: Thesis[]
+    theses: Thesis[] | null
     indictments: Indictment[]
 }
 

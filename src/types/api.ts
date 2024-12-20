@@ -1,16 +1,10 @@
 export interface SolutionRequest {
-    scheduleId: number
+    scheduleId: number | null
     persons: Person[]
     sessions: Session[]
-    thesis: Thesis[]
+    thesis: Thesis[] | null
     score: string | null
     properties: Properties
-}
-
-interface Score {
-    feasible: boolean
-    solutionInitialized: boolean
-    zero: boolean
 }
 
 interface Properties {

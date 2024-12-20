@@ -29,7 +29,7 @@ export default {
             sessions: mapApiSessions(fetchedSolution.sessions),
             persons: mapApiPersons(fetchedSolution.persons),
             score: fetchedSolution.score,
-            theses: mapApiThesisList(fetchedSolution.thesis),
+            theses: null,
             indictments: [],
         }
 
