@@ -14,7 +14,7 @@ export interface Session {
     startDate: string
     slotDuration: number
     room: string
-    theses: Thesis[]
+    theses: number[]
 }
 
 export interface Person {
@@ -32,7 +32,7 @@ export interface TimeConstraint {
 
 export interface Thesis {
     id: number
-    title: string
+    name: string
     author: number
     supervisor: number
     reviewer: number

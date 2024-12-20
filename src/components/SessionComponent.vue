@@ -43,7 +43,7 @@ const formatDate = (date: string) => {
                 </tr>
             </thead>
             <tbody>
-                <SlotComponent v-for="thesis of session.theses" :key="thesis.id" :thesis="thesis"/>
+                <SlotComponent v-for="thesis of session.theses" :key="thesis" :thesisId="thesis"/>
             </tbody>
         </table>
     </div>

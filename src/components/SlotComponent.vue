@@ -1,53 +1,46 @@
 <script setup lang="ts">
 import { type Thesis, type Person } from '@/types/app';
 import useSolutionState from '@/composables/useSolutionState';
-import { computed } from 'vue';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
+import SlotData from './SlotData.vue';
 
 const props = defineProps<{
-    thesis: Thesis
-    // indictments: Indictment[]
+    thesisId: number
 }>()
 
-const { persons } = useSolutionState()
+const { theses, persons } = useSolutionState()
+
+const thesis = computed(() => theses.value.filter(thesis => {
+    return thesis.id === props.thesisId
+})[0])
 
 const author = computed<Person>(() => persons.value.filter(person => {
-    return person.id === props.thesis.author
+    return person.id === thesis.value.author
 })[0])
+
 const reviewer = computed<Person>(() => persons.value.filter(person => {
-    return person.id === props.thesis.reviewer
+    return person.id === thesis.value.reviewer
 })[0])
+
 const supervisor = computed<Person>(() => persons.value.filter(person => {
-    return person.id === props.thesis.supervisor
+    return person.id === thesis.value.supervisor
 })[0])
+
+function hasIndictment(obj: Person | Thesis): boolean {
+    return obj.indictments.length > 0
+}
 
 const showIndictments = ref<boolean>(false)
 </script>
 
 <template>
-    <div v-show="showIndictments">
-    </div>
     <tr @mouseover="showIndictments = true" @mouseleave="showIndictments = false">
-        <td>{{ author.name }}</td>
-        <td>{{ thesis.title }}</td>
-        <td>{{ supervisor.name }}</td>
-        <td>{{ reviewer.name }}</td>
+        <SlotData :object="author" :hasIndictment="hasIndictment(author)" />
+        <SlotData :object="thesis" :hasIndictment="hasIndictment(thesis)" />
+        <SlotData :object="supervisor" :hasIndictment="hasIndictment(supervisor)" />
+        <SlotData :object="reviewer" :hasIndictment="hasIndictment(reviewer)" />
     </tr>
 </template>
 
 <style scoped>
-td {
-    padding: 10px;
-    background-color: var(--gray);
-}
-
-td:first-child {
-    border-top-left-radius: 10px;
-    border-bottom-left-radius: 10px;
-}
-
-td:last-child {
-    border-bottom-right-radius: 10px;
-    border-top-right-radius: 10px;
-}
 </style>

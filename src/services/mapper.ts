@@ -131,19 +131,11 @@ function mapApiTimeConstraints(timeConstraintsApi: TimeConstraintApi[]): TimeCon
     return timeConstraints
 }
 
-function mapApiThesisList(thesesApi: ThesisApi[]): Thesis[] {
-    const theses: Thesis[] = []
+function mapApiThesisList(thesesApi: ThesisApi[]): number[] {
+    const theses: number[] = []
 
     for (const thesisApi of thesesApi) {
-        const thesis: Thesis = {
-            id: thesisApi.thesisId,
-            title: thesisApi.title,
-            author: thesisApi.author,
-            supervisor: thesisApi.supervisor,
-            reviewer: thesisApi.reviewer,
-            indictments: [],
-        }
-
+        const thesis = thesisApi.thesisId
         theses.push(thesis)
     }
 
@@ -181,7 +173,7 @@ function mapAppTimeConstraints(timeConstraints: TimeConstraint[]): TimeConstrain
 function mapAppThesisList(theses: Thesis[]): ThesisApi[] {
     return theses.map(thesis => ({
         thesisId: thesis.id,
-        title: thesis.title,
+        title: thesis.name,
         author: thesis.author,
         supervisor: thesis.supervisor,
         reviewer: thesis.reviewer,

@@ -1,4 +1,4 @@
-import { reactive, toRefs, shallowReadonly } from 'vue'
+import { reactive, toRefs, shallowReadonly, readonly } from 'vue'
 import { type Solution } from '@/types/app'
 import mapper from '@/services/mapper'
 import api from '@/services/api'
@@ -15,7 +15,7 @@ const solution = reactive<Solution>({
 })
 
 export default () => {
-    const { id, name, score, sessions, persons, indictments, solved } = toRefs(solution)
+    const { id, name, score, sessions, persons, indictments, solved, theses } = toRefs(solution)
 
     function loadSolution(s: Solution) {
         solution.id = s.id
@@ -114,6 +114,7 @@ export default () => {
         sessions: shallowReadonly(sessions),
         indictments: shallowReadonly(indictments),
         solved: shallowReadonly(solved),
+        theses: readonly(theses),
         loadSolution,
         loadSolutionApi,
         loadIndictments,
