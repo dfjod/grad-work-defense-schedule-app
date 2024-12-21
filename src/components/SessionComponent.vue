@@ -1,10 +1,16 @@
 <script setup lang="ts">
 import { type Session } from '@/types/app';
 import SlotComponent from './SlotComponent.vue';
+import draggableComponent from 'vuedraggable';
+import useSolutionState from '@/composables/useSolutionState';
 
-defineProps<{
-    session: Session
+const props = defineProps<{
+    sessionId: number
 }>()
+
+const { sessions } = useSolutionState()
+
+const session: Session = sessions.value.find((session: Session) => session.id === props.sessionId)
 
 const formatDate = (date: string) => {
     const options: Intl.DateTimeFormatOptions = {
@@ -42,9 +48,11 @@ const formatDate = (date: string) => {
                     <th>Reviewer</th>
                 </tr>
             </thead>
-            <tbody>
-                <SlotComponent v-for="thesis of session.theses" :key="thesis" :thesisId="thesis"/>
-            </tbody>
+            <draggableComponent v-model="session.theses" group="theses" item-key="id" tag="tbody">
+                <template #item="{ element: thesis }">
+                    <SlotComponent :key="thesis" :thesisId="thesis" />
+                </template>
+            </draggableComponent>
         </table>
     </div>
 </template>
@@ -58,6 +66,11 @@ const formatDate = (date: string) => {
     background-color: var(--light-gray);
     border-radius: 10px;
     padding: 25px;
+    margin-bottom: 10px;
+}
+
+.session:last-child {
+    margin-bottom: 0;
 }
 
 table {

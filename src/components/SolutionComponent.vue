@@ -17,7 +17,7 @@ const { score, sessions, solutionLoaded, solved } = useSolutionState()
             Press Solve to see the solution
         </div>
         <div v-else class="session-wrapper">
-            <SessionComponent v-for="session of sessions" :key="session.id" :session="session" />
+            <SessionComponent v-for="session of sessions" :key="session.id" :sessionId="session.id" />
         </div>
     </div>
 </template>

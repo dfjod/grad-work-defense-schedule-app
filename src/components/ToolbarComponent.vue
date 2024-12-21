@@ -45,4 +45,8 @@ const scoreLoaded = computed(() => {
     display: flex;
     align-items: center;
 }
+
+.right {
+    gap: 5px;
+}
 </style>
