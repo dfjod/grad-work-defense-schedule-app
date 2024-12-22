@@ -39,5 +39,11 @@ export default {
             console.error(error)
             return []
         }
+    },
+
+    async putandindictments(data: SolutionRequest): Promise<Indictment[]> {
+        const requestJson = JSON.stringify(data)
+        const response = await apiClient.post('/defsched/putandindictments', requestJson)
+        return response.data
     }
 }

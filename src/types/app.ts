@@ -1,6 +1,7 @@
 export interface Solution {
     id: number | null
     solved: boolean
+    changed: boolean
     name: string
     score: string
     sessions: Session[]
@@ -15,6 +16,7 @@ export interface Session {
     slotDuration: number
     room: string
     theses: number[]
+    thesesPrevious: number[]
 }
 
 export interface Person {

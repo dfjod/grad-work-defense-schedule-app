@@ -18,12 +18,14 @@ import {
     type Thesis,
     type TimeConstraint,
 } from '@/types/app'
+import moment from 'moment'
 
 export default {
     mapApiSolution(fetchedSolution: SolutionResponse): Solution {
         const solution: Solution = {
             id: fetchedSolution.scheduleId,
             solved: true,
+            changed: false,
             // Temporary naming solution
             name: `Solution ${fetchedSolution.scheduleId}`,
             sessions: mapApiSessions(fetchedSolution.sessions),
@@ -53,13 +55,26 @@ export default {
         return indictments
     },
 
-    mapAppSolution(solution: Solution): SolutionRequest {
+    mapAppSolutionForSolving(solution: Solution): SolutionRequest {
         return {
             scheduleId: solution.id,
             persons: mapAppPersons(solution.persons),
-            sessions: mapAppSessions(solution.sessions),
-            thesis: mapAppThesisList(solution.theses),
-            score: null,
+            sessions: mapAppSessions(solution.sessions, solution.theses, solution.solved),
+            thesis: mapAppThesisListForSolving(solution.theses),
+            score: solution.score || null,
+            properties: {
+                sessionSize: 0
+            }
+        }
+    },
+
+    mapAppSolutionForIndictments(solution: Solution): SolutionRequest {
+        return {
+            scheduleId: solution.id,
+            persons: mapAppPersons(solution.persons),
+            sessions: mapAppSessions(solution.sessions, solution.theses, solution.solved),
+            thesis: mapAppThesisListForIndictments(solution.theses),
+            score: solution.score || null,
             properties: {
                 sessionSize: 0
             }
@@ -91,6 +106,7 @@ function mapApiSessions(sessionsApi: SessionApi[]): Session[] {
             startDate: sessionApi.startingAt,
             slotDuration: sessionApi.slotDurationMinutes,
             theses: mapApiThesisList(sessionApi.thesisList),
+            thesesPrevious: mapApiThesisList(sessionApi.thesisList),
             room: sessionApi.room,
         }
         sessions.push(session)
@@ -144,12 +160,12 @@ function mapApiThesisList(thesesApi: ThesisApi[]): number[] {
 
 
 
-function mapAppSessions(sessions: Session[]): SessionApi[] {
+function mapAppSessions(sessions: Session[], theses: Thesis[], solved: boolean): SessionApi[] {
     return sessions.map(session => ({
         sessionId: session.id,
         startingAt: session.startDate,
         slotDurationMinutes: session.slotDuration,
-        thesisList: [],
+        thesisList: mapAppThesesForSession(session.id, session.theses, theses, solved, session.startDate, session.slotDuration),
         room: session.room,
     }))
 }
@@ -170,7 +186,7 @@ function mapAppTimeConstraints(timeConstraints: TimeConstraint[]): TimeConstrain
     }))
 }
 
-function mapAppThesisList(theses: Thesis[]): ThesisApi[] {
+function mapAppThesisListForSolving(theses: Thesis[]): ThesisApi[] {
     return theses.map(thesis => ({
         thesisId: thesis.id,
         title: thesis.name,
@@ -183,4 +199,40 @@ function mapAppThesisList(theses: Thesis[]): ThesisApi[] {
         startsAt: null,
         cascadeStartsAt: null,
     }))
+}
+
+function mapAppThesisListForIndictments(theses: Thesis[]): number[] {
+    return theses.map(thesis => thesis.id)
+}
+
+function mapAppThesesForSession(
+    sessionId: number,
+    thesesSequence: number[],
+    theses: Thesis[],
+    solutionSolved: boolean,
+    sessionStartDate: string,
+    slotDuration: number,
+): ThesisApi[] {
+    if (!solutionSolved) {
+        return []
+    }
+
+    return thesesSequence.map((thesisId, index) => {
+        const thesis = theses.find((thesis) => thesis.id === thesisId)
+        const previous = index === 0 ? null : thesesSequence[index - 1]
+        const next = index === thesesSequence.length - 1 ? null : thesesSequence[index + 1]
+        const startsAt = index === 0 ? sessionStartDate : moment(sessionStartDate).add(slotDuration * index, 'm').format("YYYY-MM-DDTHH:mm:ss")
+        return {
+            thesisId: thesis.id,
+            title: thesis.name,
+            author: thesis.author,
+            supervisor: thesis.supervisor,
+            reviewer: thesis.reviewer,
+            session: sessionId,
+            previous: previous,
+            next: next,
+            startsAt: startsAt,
+            cascadeStartsAt: startsAt,
+        }
+    })
 }

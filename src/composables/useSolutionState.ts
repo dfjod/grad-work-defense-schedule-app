@@ -2,10 +2,12 @@ import { reactive, toRefs, shallowReadonly, readonly } from 'vue'
 import { type Solution } from '@/types/app'
 import mapper from '@/services/mapper'
 import api from '@/services/api'
+import type { Indictment } from '@/types/api'
 
 const solution = reactive<Solution>({
     id: null,
     solved: false,
+    changed: false,
     name: '',
     score: '',
     sessions: [],
@@ -36,6 +38,7 @@ export default () => {
         }
 
         const fetchedSolution = await api.solution(solution.id)
+        console.log(fetchedSolution)
         const mappedSolution = mapper.mapApiSolution(fetchedSolution)
 
         loadSolution(mappedSolution)
@@ -47,21 +50,50 @@ export default () => {
             return
         }
 
-        const fetchIndictments = await api.indictments(solution.id)
-        const mappedIndictments = mapper.mapApiIndictments(fetchIndictments)
+        if (solution.solved === false) {
+            console.error('Solution not solved')
+            return
+        }
 
-        solution.indictments = mappedIndictments
+        checkAndSetChangedState()
+        console.log('Solution changed state:', solution.changed)
 
-        distributeIndictments()
+        let fetchIndictments: Indictment[] = []
+
+        if (solution.indictments.length === 0) {
+            console.log('Indictments not loaded, fetching them')
+            fetchIndictments = await api.indictments(solution.id)
+        }
+
+        if (solution.changed) {
+            console.log('Solution has changed, fetching new indictments')
+            // Update previousTheses list
+            solution.sessions.forEach(session => {
+                session.thesesPrevious = session.theses
+            })
+            fetchIndictments = await api.putandindictments(mapper.mapAppSolutionForIndictments(solution))
+        }
+
+        if (fetchIndictments.length > 0) {
+            const mappedIndictments = mapper.mapApiIndictments(fetchIndictments)
+            solution.indictments = mappedIndictments
+            distributeIndictments()
+        } else {
+            console.log('Solution has not changed, indictments are up to date')
+        }
     }
 
     async function solveSolution() {
         if (solution.id !== null) {
-            const requestObj = mapper.mapAppSolution(solution)
+            const requestObj = mapper.mapAppSolutionForSolving(solution)
             await api.solve(requestObj)
         } else {
             console.error('Solution not loaded')
         }
+    }
+
+    function printSolvePayload() {
+        console.log(mapper.mapAppSolutionForIndictments(solution))
     }
 
     const solutionLoaded = () => solution.id !== null
@@ -106,6 +138,21 @@ export default () => {
         console.log(solution)
     }
 
+    function checkAndSetChangedState(): void{
+        let changed = false;
+
+        for (const session of solution.sessions) {
+            const theses = session.theses.toString()
+            const thesesPrevious = session.thesesPrevious.toString()
+            if (theses !== thesesPrevious) {
+                changed = true
+                break
+            }
+        }
+
+        solution.changed = changed
+    }
+
     return {
         id: shallowReadonly(id),
         name: shallowReadonly(name),
@@ -123,5 +170,6 @@ export default () => {
         changeName,
         solveSolution,
         printSolution,
+        printSolvePayload,
     }
 }
