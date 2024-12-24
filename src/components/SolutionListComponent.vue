@@ -11,6 +11,8 @@ const emit = defineEmits<{
     loadSolution: [id: number]
     importModalOpen: []
     exportSolution: []
+    managePersons: []
+    manageTheses: []
 }>()
 
 function handleLoad(id: number) {
@@ -25,11 +27,20 @@ function handleExport() {
     emit('exportSolution')
 }
 
+function handleManagePersons() {
+    emit('managePersons')
+}
+
+function handleManageTheses() {
+    emit('manageTheses')
+}
 const solutionsAvailable = computed(() => props.list.length > 0)
 </script>
 
 <template>
     <div class="list">
+        <BaseButton @click="handleManagePersons" color="green">Manage persons</BaseButton>
+        <BaseButton @click="handleManageTheses" color="green">Manage theses</BaseButton>
         <BaseButton @click="handleImport" color="green">Import a solution</BaseButton>
         <BaseButton @click="handleExport" color="orange">Export a solution</BaseButton>
         <div v-if="solutionsAvailable">

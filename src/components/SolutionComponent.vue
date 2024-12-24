@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import useSolutionState from '@/composables/useSolutionState';
 import SessionComponent from './SessionComponent.vue';
-import ToolbarComponent from './ToolbarComponent.vue';
+import SolutionToolbar from './SolutionToolbar.vue';
 
 const { score, sessions, solutionLoaded, solved } = useSolutionState()
 // TODO: Does this computed property belong here?
@@ -12,7 +12,7 @@ const { score, sessions, solutionLoaded, solved } = useSolutionState()
         Import a solution to get started
     </div>
     <div v-else class="selected">
-        <ToolbarComponent :score="score" />
+        <SolutionToolbar :score="score" />
         <div v-if="!solved" class="not-selected">
             Press Solve to see the solution
         </div>

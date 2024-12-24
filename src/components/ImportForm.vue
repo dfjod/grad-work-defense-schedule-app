@@ -28,6 +28,7 @@ const emit = defineEmits<{
 const form = ref<Solution>({
     id: null,
     solved: false,
+    changed: false,
     name: '',
     score: '',
     sessions: [],

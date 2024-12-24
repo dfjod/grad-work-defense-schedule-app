@@ -69,7 +69,7 @@ onUpdated(() => {
 }
 
 .indictment {
-    background-color: #ff3333;
+    background-color: var(--red);
 }
 
 td {
