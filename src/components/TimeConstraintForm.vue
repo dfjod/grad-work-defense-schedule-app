@@ -12,11 +12,11 @@
     <div v-if="showTimeConstraintForm" class="time-constraint-form">
         <div class="field">
             <label for="from">From</label>
-            <input id="from" name="from" v-model="timeConstraint.from" />
+            <input id="from" name="from" type="datetime-local" v-model="timeConstraint.from" />
         </div>
         <div class="field">
             <label for="to">To</label>
-            <input id="to" name="to" v-model="timeConstraint.to" />
+            <input id="to" name="to" type="datetime-local" v-model="timeConstraint.to" />
         </div>
         <BaseButton @click="handleSave" color="green">Save</BaseButton>
     </div>
