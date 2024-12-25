@@ -21,9 +21,11 @@ export interface Session {
 
 export interface Person {
     id: number
+    isStudent: boolean
     name: string
     timeConstraints: TimeConstraint[]
     indictments: Indictment[]
+    thesis?: number
 }
 
 export interface TimeConstraint {

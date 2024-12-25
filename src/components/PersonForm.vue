@@ -27,15 +27,22 @@
                 </div>
             </div>
             <div v-else-if="showForm" class="person-form">
-                <form @submit.prevent="handleSubmit">
+                <form @submit.prevent="handleSubmit" class="person-form">
                     <div class="field">
                         <label for="name">Name</label>
                         <input id="name" name="name" v-model="person.name" />
                     </div>
                     <div class="field">
+                        <label for="isStudent">Is student</label>
+                        <input id="isStudent" name="isStudent" type="checkbox" v-model="person.isStudent" />
+                    </div>
+                    <div class="field">
                         <TimeConstraintForm :time-constraints="person.timeConstraints"
                             @save-time-constraint="handleSaveTimeConstraint"
                             @delete-time-constraint="handleDeleteTimeConstraint" />
+                    </div>
+                    <div v-if="person.isStudent" class="field">
+                        <ThesisForm :person="person" @save-thesis="handleSaveThesis"/>
                     </div>
                 </form>
                 <BaseButton v-if="isSavedPerson" @click="handleDeletePerson" color="red">Delete</BaseButton>
@@ -58,6 +65,7 @@ import ModalComponent from '@/components/ModalComponent.vue';
 import PersonFormSlot from '@/components/PersonFormSlot.vue';
 import usePersonState from '@/composables/usePersonState'
 import TimeConstraintForm from '@/components/TimeConstraintForm.vue';
+import ThesisForm from '@/components/ThesisForm.vue'
 import JsonEditor from 'vue3-ts-jsoneditor'
 import { computed, ref } from 'vue'
 
@@ -71,13 +79,16 @@ const personsJson = ref<Person[]>([
     {
         id: null,
         name: 'Example Person',
+        isStudent: false,
         timeConstraints: [],
         indictments: [],
     }
 ])
+
 const person = ref<Person>({
     id: null,
     name: '',
+    isStudent: false,
     timeConstraints: [],
     indictments: [],
 })
@@ -86,6 +97,7 @@ const resetPerson = () => {
     person.value = {
         id: null,
         name: '',
+        isStudent: false,
         timeConstraints: [],
         indictments: [],
     }
@@ -124,6 +136,10 @@ const handleEditPerson = (personToEdit: Person) => {
     console.log("Editing person", person)
     showForm.value = true
     person.value = personToEdit
+}
+
+const handleSaveThesis = (thesisId: number) => {
+    person.value.thesis = thesisId
 }
 </script>
 

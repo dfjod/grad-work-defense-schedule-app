@@ -50,11 +50,21 @@ export default () => {
         person.timeConstraints.splice(index, 1)
     }
 
+    function getStudents() {
+        return persons.value.filter(p => p.isStudent)
+    }
+
+    function getAcademicStaff() {
+        return persons.value.filter(p => !p.isStudent)
+    }
+
     return {
         persons: readonly(persons),
         savePerson,
         deletePerson,
         saveTimeConstraint,
-        deleteTimeConstraint
+        deleteTimeConstraint,
+        getStudents,
+        getAcademicStaff
     }
 }

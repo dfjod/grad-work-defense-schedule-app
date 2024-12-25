@@ -1,11 +1,7 @@
 <template>
     <label for="timeconstraints">Time Constraints</label>
-    <TimeConstraintSlot
-        v-for="constraint in timeConstraints"
-        :key="constraint.id"
-        :time-constraint="constraint"
-        @delete-time-constraint="handleDeleteTimeConstraint"
-    />
+    <TimeConstraintSlot v-for="constraint in timeConstraints" :key="constraint.id" :time-constraint="constraint"
+        @delete-time-constraint="handleDeleteTimeConstraint" />
     <BaseButton v-if="!showTimeConstraintForm" @click="showTimeConstraintForm = true" color="gray">
         Add Time Constraint
     </BaseButton>
@@ -18,7 +14,10 @@
             <label for="to">To</label>
             <input id="to" name="to" type="datetime-local" v-model="timeConstraint.to" />
         </div>
-        <BaseButton @click="handleSave" color="green">Save</BaseButton>
+        <div class="form-buttons">
+            <BaseButton @click="handleSave" color="green">Save Time Constraint</BaseButton>
+            <BaseButton @click="handleCloseTimeConstraint" color="red">Close Time Constraint</BaseButton>
+        </div>
     </div>
 </template>
 
@@ -51,6 +50,11 @@ const handleSave = () => {
     showTimeConstraintForm.value = false
 }
 
+const handleCloseTimeConstraint = () => {
+    resetTimeConstraint()
+    showTimeConstraintForm.value = false
+}
+
 const handleDeleteTimeConstraint = (timeConstraintId: number) => {
     emit('deleteTimeConstraint', timeConstraintId)
 }
@@ -73,5 +77,11 @@ const resetTimeConstraint = () => {
 
 .person:hover {
     cursor: pointer;
+}
+
+.form-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 5px;
 }
 </style>
