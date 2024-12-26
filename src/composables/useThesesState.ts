@@ -1,7 +1,40 @@
 import { type Thesis } from "@/types/app"
 import { ref } from "vue"
 
-const theses = ref<Thesis[]>([])
+const theses = ref<Thesis[]>([
+    {
+        id: 1,
+        name: 'Efficient Algorithms for Data Sorting',
+        author: 1, // Alice Johnson
+        supervisor: 2, // Dr. Robert Smith
+        reviewer: 3, // Dr. Emily Davis
+        indictments: [],
+    },
+    {
+        id: 2,
+        name: 'Advanced AI Techniques in Robotics',
+        author: 4, // John Doe
+        supervisor: 3, // Dr. Emily Davis
+        reviewer: 2, // Dr. Robert Smith
+        indictments: [],
+    },
+    {
+        id: 3,
+        name: 'Machine Learning Applications in Healthcare',
+        author: 5, // Michael Brown
+        supervisor: 6, // Dr. Susan Clark
+        reviewer: 7, // Dr. James Taylor
+        indictments: [],
+    },
+    {
+        id: 4,
+        name: 'Exploring Quantum Computing Algorithms',
+        author: 8, // Emily White
+        supervisor: 7, // Dr. James Taylor
+        reviewer: 9, // Dr. Karen Martinez
+        indictments: [],
+    },
+])
 
 export default () => {
     function saveThesis(thesis: Thesis) {

@@ -18,10 +18,7 @@
                 </template>
             </BaseToolbar>
             <div v-if="!showForm && !showJson" class="person-list-wrapper">
-                <div v-if="hasPersons" class="person-list">
-                    <PersonFormSlot v-for="person of persons" :person="person" :key="person.id"
-                        @edit-person="handleEditPerson" />
-                </div>
+                <PersonList v-if="hasPersons" :handle-click-event="handleEditPerson" />
                 <div v-else class="alert">
                     <p>Add a person to the list</p>
                 </div>
@@ -62,12 +59,12 @@ import { type Person } from '@/types/app';
 import BaseButton from '@/components/BaseButton.vue';
 import BaseToolbar from '@/components/BaseToolbar.vue';
 import ModalComponent from '@/components/ModalComponent.vue';
-import PersonFormSlot from '@/components/PersonFormSlot.vue';
 import usePersonState from '@/composables/usePersonState'
 import TimeConstraintForm from '@/components/TimeConstraintForm.vue';
 import ThesisForm from '@/components/ThesisForm.vue'
 import JsonEditor from 'vue3-ts-jsoneditor'
 import { computed, ref } from 'vue'
+import PersonList from './PersonList.vue';
 
 const { persons, savePerson, deletePerson, saveTimeConstraint, deleteTimeConstraint } = usePersonState()
 const hasPersons = computed(() => persons.value.length > 0)
@@ -157,7 +154,7 @@ const handleSaveThesis = (thesisId: number) => {
 }
 
 .person-list-wrapper {
-    gap: 10px;
+    text-align: center;
 }
 
 .person-list {

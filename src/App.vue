@@ -6,7 +6,7 @@ import useSolution from './composables/useSolutionState'
 import { type Solution, type SolutionElement } from '@/types/app';
 import ImportForm from '@/components/ImportForm.vue';
 import PersonForm from './components/PersonForm.vue';
-import ThesesForm from './components/ThesesForm.vue';
+import SolutionForm from './components/SolutionForm.vue';
 
 const { loadSolution } = useSolution()
 
@@ -15,25 +15,17 @@ const solutionList: SolutionElement[] = [
     // { id: 1, title: 'Solution 1' },
 ]
 
+const isImportModalOpen = ref<boolean>(false)
 const isCreationModalOpen = ref<boolean>(false)
-const isPersonFormOpen = ref<boolean>(false)
-const isThesesFormOpen = ref<boolean>(false)
+const isPersonModalOpen = ref<boolean>(false)
 
 const handleImprot = (solution: Solution) => {
     loadSolution(solution)
-    isCreationModalOpen.value = false
+    isImportModalOpen.value = false
 }
 
 const handleExport = () => {
     useSolution().exportSolution()
-}
-
-const handleManagePersons = () => {
-    isPersonFormOpen.value = true
-}
-
-const handleManageTheses = () => {
-    isThesesFormOpen.value = true
 }
 </script>
 
@@ -41,16 +33,16 @@ const handleManageTheses = () => {
     <div class="wrapper">
         <SolutionListComponent
             :list="solutionList"
-            @import-modal-open="isCreationModalOpen = true"
+            @import-modal-open="isImportModalOpen = true"
             @export-solution="handleExport"
-            @manage-persons="handleManagePersons"
-            @manage-theses="handleManageTheses"
+            @manage-persons="isPersonModalOpen = true"
+            @create-solution="isCreationModalOpen = true"
         />
         <SolutionComponent class="solution" />
     </div>
-    <ImportForm v-if="isCreationModalOpen" @close-modal="isCreationModalOpen = false" @submit="handleImprot" />
-    <PersonForm v-if="isPersonFormOpen" @close-modal="isPersonFormOpen = false" />
-    <ThesesForm v-if="isThesesFormOpen" @close-modal="isThesesFormOpen = false" />
+    <ImportForm v-if="isImportModalOpen" @close-modal="isImportModalOpen = false" @submit="handleImprot" />
+    <PersonForm v-if="isPersonModalOpen" @close-modal="isPersonModalOpen = false" />
+    <SolutionForm v-if="isCreationModalOpen" @close-modal="isCreationModalOpen = false" />
 </template>
 
 <style>

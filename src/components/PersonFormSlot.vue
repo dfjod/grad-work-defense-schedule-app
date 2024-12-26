@@ -6,24 +6,35 @@
 
 <script setup lang="ts">
 import type { Person } from '@/types/app';
+import { computed } from 'vue';
 
 const emit = defineEmits<{
-    (e: 'editPerson', person: Person): void
+    (e: 'person-clicked', person: Person): void
 }>()
 
 const props = defineProps<{
     person: Person
+    colorFunction?: (person: Person) => string | null
 }>()
 
+const color = computed(() => {
+    if (props.colorFunction) {
+        const color = props.colorFunction(props.person)
+        return color ? `var(--${color})` : 'var(--gray)'
+    } else {
+        return 'var(--gray)'
+    }
+})
+
 const handleClick = () => {
-    emit('editPerson', props.person)
+    emit('person-clicked', props.person)
 }
 </script>
 
 <style scoped>
 .person {
     padding: 10px;
-    background-color: var(--gray);
+    background-color: v-bind(color);
     border-radius: 10px;
 }
 
