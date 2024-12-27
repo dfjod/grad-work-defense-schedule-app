@@ -1,7 +1,7 @@
 <template>
-    <ModalComponent>
+    <ModalComponent @close-modal="handleCloseModal">
         <h2>Create a Solution from Scratch</h2>
-        <form @submit.prevent="saveSolution">
+        <form @submit.prevent="handleSave">
             <div class="wrapper">
                 <div class="field">
                     <label for="name">Name</label>
@@ -14,19 +14,26 @@
                 <div class="field">
                     <SessionForm v-model="solution.sessions" />
                 </div>
-                <BaseButton @click="saveSolution" color="green">Save solution</BaseButton>
+                <BaseButton @click="handleSave" color="green">Save solution</BaseButton>
             </div>
         </form>
     </ModalComponent>
 </template>
 
 <script setup lang="ts">
-import ModalComponent from '@/components/ModalComponent.vue'
 import { type Solution, type Person } from '@/types/app'
+import ModalComponent from '@/components/ModalComponent.vue'
+import PersonList from '@/components/PersonList.vue'
+import SessionForm from '@/components/SessionForm.vue'
+import BaseButton from '@/components/BaseButton.vue'
+import useSolutionsState from '@/composables/useSolutionsState'
 import { ref } from 'vue'
-import PersonList from './PersonList.vue'
-import SessionForm from './SessionForm.vue'
-import BaseButton from './BaseButton.vue'
+
+const emit = defineEmits<{
+    closeModal: []
+}>()
+
+const { saveSolution } = useSolutionsState()
 
 const solution = ref<Solution>({
     id: null,
@@ -54,8 +61,14 @@ function handleClick(person: Person) {
     }
 }
 
-function saveSolution() {
-    console.log('Solution saved:', solution);
+function handleSave() {
+    solution.value.persons = solutionPersons.value
+    saveSolution(solution.value)
+    handleCloseModal()
+}
+
+function handleCloseModal() {
+    emit('closeModal')
 }
 </script>
 

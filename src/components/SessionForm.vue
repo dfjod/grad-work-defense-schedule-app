@@ -27,8 +27,8 @@
                 <input id="room" name="room" v-model="session.room" required />
             </div>
             <div class="form-buttons">
-                <BaseButton @click="saveSession" color="green">Save Time Constraint</BaseButton>
-                <BaseButton @click="handleCloseSessionForm" color="red">Close Time Constraint</BaseButton>
+                <BaseButton @click="saveSession" color="green">Save Session</BaseButton>
+                <BaseButton @click="handleCloseSessionForm" color="red">Close Session</BaseButton>
             </div>
         </form>
     </div>
@@ -37,7 +37,7 @@
 <script setup lang="ts">
 import { type Session } from '@/types/app'
 import { ref } from 'vue'
-import BaseButton from './BaseButton.vue';
+import BaseButton from './BaseButton.vue'
 
 const sessions = defineModel<Session[]>()
 

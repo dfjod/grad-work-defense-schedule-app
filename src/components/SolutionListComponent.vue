@@ -1,11 +1,7 @@
 <script setup lang="ts">
-import { type SolutionElement } from '@/types/app';
-import BaseButton from '@/components/BaseButton.vue';
-import { computed } from 'vue';
-
-const props = defineProps<{
-  list: SolutionElement[]
-}>()
+import BaseButton from '@/components/BaseButton.vue'
+import { computed } from 'vue'
+import useSolutionsState from '@/composables/useSolutionsState'
 
 const emit = defineEmits<{
     loadSolution: [id: number]
@@ -14,6 +10,8 @@ const emit = defineEmits<{
     managePersons: []
     createSolution: []
 }>()
+
+const { solutions } = useSolutionsState()
 
 function handleLoad(id: number) {
     emit('loadSolution', id)
@@ -35,7 +33,7 @@ function handleCreateSolution() {
     emit('createSolution')
 }
 
-const solutionsAvailable = computed(() => props.list.length > 0)
+const solutionsAvailable = computed(() => solutions.value.length > 0)
 </script>
 
 <template>
@@ -45,8 +43,8 @@ const solutionsAvailable = computed(() => props.list.length > 0)
         <BaseButton @click="handleImport" color="green">Import</BaseButton>
         <BaseButton @click="handleExport" color="orange">Export</BaseButton>
         <div v-if="solutionsAvailable">
-            <div v-for="schedule in props.list" :key="schedule.id">
-                <BaseButton @click="handleLoad(schedule.id)">{{ schedule.title }}</BaseButton>
+            <div v-for="solution in solutions" :key="solution.id">
+                <BaseButton @click="handleLoad(solution.id)">{{ solution.name }}</BaseButton>
             </div>
         </div>
     </div>

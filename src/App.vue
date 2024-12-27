@@ -3,17 +3,12 @@ import { ref, type Ref } from 'vue'
 import SolutionListComponent from './components/SolutionListComponent.vue'
 import SolutionComponent from './components/SolutionComponent.vue';
 import useSolution from './composables/useSolutionState'
-import { type Solution, type SolutionElement } from '@/types/app';
+import { type Solution } from '@/types/app';
 import ImportForm from '@/components/ImportForm.vue';
 import PersonForm from './components/PersonForm.vue';
 import SolutionForm from './components/SolutionForm.vue';
 
 const { loadSolution } = useSolution()
-
-// TODO: Implement local storage for solutions
-const solutionList: SolutionElement[] = [
-    // { id: 1, title: 'Solution 1' },
-]
 
 const isImportModalOpen = ref<boolean>(false)
 const isCreationModalOpen = ref<boolean>(false)
@@ -32,7 +27,6 @@ const handleExport = () => {
 <template>
     <div class="wrapper">
         <SolutionListComponent
-            :list="solutionList"
             @import-modal-open="isImportModalOpen = true"
             @export-solution="handleExport"
             @manage-persons="isPersonModalOpen = true"
