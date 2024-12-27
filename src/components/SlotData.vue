@@ -1,5 +1,4 @@
 <template>
-
     <td
         :class="{ indictment: hasIndictment }"
         @mouseover="showIndictment = true"

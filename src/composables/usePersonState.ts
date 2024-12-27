@@ -145,6 +145,10 @@ export default () => {
         person.timeConstraints.splice(index, 1)
     }
 
+    function getPersonById(id: number): Person | undefined {
+        return persons.value.find(p => p.id === id)
+    }
+
     function getStudents(): Person[] {
         return persons.value.filter(p => p.isStudent)
     }
@@ -160,6 +164,7 @@ export default () => {
         saveTimeConstraint,
         deleteTimeConstraint,
         getStudents,
-        getAcademicStaff
+        getAcademicStaff,
+        getPersonById,
     }
 }

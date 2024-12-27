@@ -1,36 +1,37 @@
 <script setup lang="ts">
-import { type Thesis, type Person } from '@/types/app';
-import useSolutionState from '@/composables/useSolutionState';
-import { ref, computed } from 'vue';
-import SlotData from './SlotData.vue';
+import { type Thesis, type Person } from '@/types/app'
+import SlotData from '@/components/SlotData.vue'
+import usePersonState from '@/composables/usePersonState'
+import useThesesState from '@/composables/useThesesState'
+import { ref, computed, onMounted } from 'vue'
 
 const props = defineProps<{
     thesisId: number
 }>()
 
-const { theses, persons } = useSolutionState()
+const { findThesisById } = useThesesState()
+const { getPersonById } = usePersonState()
 
-const thesis = computed(() => theses.value.filter(thesis => {
-    return thesis.id === props.thesisId
-})[0])
+const thesis = findThesisById(props.thesisId)
 
-const author = computed<Person>(() => persons.value.filter(person => {
-    return person.id === thesis.value.author
-})[0])
+const author = getPersonById(thesis.author)
 
-const reviewer = computed<Person>(() => persons.value.filter(person => {
-    return person.id === thesis.value.reviewer
-})[0])
+const reviewer = getPersonById(thesis.reviewer)
 
-const supervisor = computed<Person>(() => persons.value.filter(person => {
-    return person.id === thesis.value.supervisor
-})[0])
+const supervisor = getPersonById(thesis.supervisor)
 
 function hasIndictment(obj: Person | Thesis): boolean {
     return obj.indictments.length > 0
 }
 
 const showIndictments = ref<boolean>(false)
+onMounted(() => {
+    console.log('SlotComponent mounted')
+    console.log(thesis)
+    console.log(author)
+    console.log(reviewer)
+    console.log(supervisor)
+})
 </script>
 
 <template>

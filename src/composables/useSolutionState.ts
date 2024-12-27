@@ -1,4 +1,4 @@
-import { reactive } from 'vue'
+import { reactive, readonly } from 'vue'
 import { type Solution } from '@/types/app'
 import mapper from '@/services/mapper'
 import api from '@/services/api'
@@ -34,10 +34,14 @@ export default () => {
         }
 
         const fetchedSolution = await api.solution(solution.id)
-        console.log(fetchedSolution)
-        const mappedSolution = mapper.mapApiSolution(fetchedSolution)
+        const sessions = mapper.mapApiSessions(fetchedSolution.sessions)
+        console.log('Fetched solution:', fetchedSolution)
+        console.log('Mapped sessions:', sessions)
 
-        loadSolution(mappedSolution)
+        solution.sessions = sessions
+        solution.score = fetchedSolution.score
+        solution.solved = true
+        console.log('Solution loaded:', solution)
     }
 
     async function loadIndictments() {
@@ -150,7 +154,7 @@ export default () => {
     }
 
     return {
-        solution,
+        solution: readonly(solution),
         loadSolution,
         loadSolutionApi,
         loadIndictments,

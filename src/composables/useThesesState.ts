@@ -1,5 +1,5 @@
 import { type Thesis } from "@/types/app"
-import { ref } from "vue"
+import { ref, readonly } from "vue"
 
 const theses = ref<Thesis[]>([
     {
@@ -66,7 +66,7 @@ export default () => {
     }
 
     return {
-        theses,
+        theses: readonly(theses),
         saveThesis,
         deleteThesis,
         findThesisById
