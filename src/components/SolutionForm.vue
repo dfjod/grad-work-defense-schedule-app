@@ -27,13 +27,17 @@ import PersonList from '@/components/PersonList.vue'
 import SessionForm from '@/components/SessionForm.vue'
 import BaseButton from '@/components/BaseButton.vue'
 import useSolutionsState from '@/composables/useSolutionsState'
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 
 const emit = defineEmits<{
     closeModal: []
 }>()
 
-const { saveSolution } = useSolutionsState()
+const props = defineProps<{
+    solutionId: number | null
+}>()
+
+const { saveSolution, getSolutionById } = useSolutionsState()
 
 const solution = ref<Solution>({
     id: null,
@@ -70,6 +74,16 @@ function handleSave() {
 function handleCloseModal() {
     emit('closeModal')
 }
+
+onMounted(() => {
+    if (props.solutionId) {
+        console.log('Editing solution', props.solutionId)
+        const solutionToEdit = getSolutionById(props.solutionId)
+        console.log('Solution to edit', solutionToEdit)
+        solution.value = solutionToEdit
+        solutionPersons.value = solutionToEdit.persons
+    }
+})
 </script>
 
 <style scoped>

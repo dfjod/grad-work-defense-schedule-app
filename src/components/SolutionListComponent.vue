@@ -2,9 +2,10 @@
 import BaseButton from '@/components/BaseButton.vue'
 import { computed } from 'vue'
 import useSolutionsState from '@/composables/useSolutionsState'
+import type { Solution } from '@/types/app';
 
 const emit = defineEmits<{
-    loadSolution: [id: number]
+    loadSolution: [solution: Solution]
     importModalOpen: []
     exportSolution: []
     managePersons: []
@@ -13,8 +14,8 @@ const emit = defineEmits<{
 
 const { solutions } = useSolutionsState()
 
-function handleLoad(id: number) {
-    emit('loadSolution', id)
+function handleLoad(solution: Solution) {
+    emit('loadSolution', solution)
 }
 
 function handleImport() {
@@ -42,9 +43,9 @@ const solutionsAvailable = computed(() => solutions.value.length > 0)
         <BaseButton @click="handleCreateSolution" color="green">Create solution</BaseButton>
         <BaseButton @click="handleImport" color="green">Import</BaseButton>
         <BaseButton @click="handleExport" color="orange">Export</BaseButton>
-        <div v-if="solutionsAvailable">
+        <div v-if="solutionsAvailable" class="solutions">
             <div v-for="solution in solutions" :key="solution.id">
-                <BaseButton @click="handleLoad(solution.id)">{{ solution.name }}</BaseButton>
+                <BaseButton @click="handleLoad(solution)">{{ solution.name }}</BaseButton>
             </div>
         </div>
     </div>
@@ -57,5 +58,11 @@ const solutionsAvailable = computed(() => solutions.value.length > 0)
 	gap: 5px;
 	padding: 10px;
     border-right: 2px solid var(--gray);
+}
+
+.solutions {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
 }
 </style>

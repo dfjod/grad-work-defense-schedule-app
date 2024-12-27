@@ -14,6 +14,7 @@
             <BaseButton @click="loadIndictments" color="gray">Indictments</BaseButton>
             <BaseButton @click="printSolution" color="gray">Print</BaseButton>
             <BaseButton @click="printSolvePayload" color="gray">Payload</BaseButton>
+            <BaseButton @click="handleEditSolution" color="green">Edit</BaseButton>
         </template>
     </BaseToolbar>
 </template>
@@ -29,9 +30,18 @@ const props = defineProps<{
     score: string
 }>()
 
-const { solveSolution, loadSolutionApi, loadIndictments, printSolution, printSolvePayload } = useSolutionState()
+const emit = defineEmits<{
+    editSolution: [solutionId: number]
+}>()
+
+const { solveSolution, loadSolutionApi, loadIndictments, printSolution, printSolvePayload, id } = useSolutionState()
 
 const scoreLoaded = computed(() => {
     return props.score !== ""
 })
+
+function handleEditSolution() {
+    console.log('editSolution', id)
+    emit('editSolution', id)
+}
 </script>

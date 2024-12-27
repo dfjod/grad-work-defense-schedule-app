@@ -3,6 +3,14 @@ import useSolutionState from '@/composables/useSolutionState';
 import SessionComponent from './SessionComponent.vue';
 import SolutionToolbar from './SolutionToolbar.vue';
 
+const emit = defineEmits<{
+    editSolution: [solutionId: number]
+}>()
+
+function handleEditSolution(solutionId: number) {
+    emit('editSolution', solutionId)
+}
+
 const { score, sessions, solutionLoaded, solved } = useSolutionState()
 // TODO: Does this computed property belong here?
 </script>
@@ -12,7 +20,7 @@ const { score, sessions, solutionLoaded, solved } = useSolutionState()
         Import a solution to get started
     </div>
     <div v-else class="selected">
-        <SolutionToolbar :score="score" />
+        <SolutionToolbar :score="score" @edit-solution="handleEditSolution"/>
         <div v-if="!solved" class="not-selected">
             Press Solve to see the solution
         </div>

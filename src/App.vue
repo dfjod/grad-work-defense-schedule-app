@@ -14,6 +14,8 @@ const isImportModalOpen = ref<boolean>(false)
 const isCreationModalOpen = ref<boolean>(false)
 const isPersonModalOpen = ref<boolean>(false)
 
+const toEdit = ref<number | null>(null)
+
 const handleImprot = (solution: Solution) => {
     loadSolution(solution)
     isImportModalOpen.value = false
@@ -21,6 +23,16 @@ const handleImprot = (solution: Solution) => {
 
 const handleExport = () => {
     useSolution().exportSolution()
+}
+
+function handleEditSolution(solutionId: number) {
+    isCreationModalOpen.value = true
+    toEdit.value = solutionId
+}
+
+function handleCloseCreationModal() {
+    toEdit.value = null
+    isCreationModalOpen.value = false
 }
 </script>
 
@@ -31,12 +43,13 @@ const handleExport = () => {
             @export-solution="handleExport"
             @manage-persons="isPersonModalOpen = true"
             @create-solution="isCreationModalOpen = true"
+            @load-solution="loadSolution"
         />
-        <SolutionComponent class="solution" />
+        <SolutionComponent class="solution" @edit-solution="handleEditSolution" />
     </div>
     <ImportForm v-if="isImportModalOpen" @close-modal="isImportModalOpen = false" @submit="handleImprot" />
     <PersonForm v-if="isPersonModalOpen" @close-modal="isPersonModalOpen = false" />
-    <SolutionForm v-if="isCreationModalOpen" @close-modal="isCreationModalOpen = false" />
+    <SolutionForm v-if="isCreationModalOpen" @close-modal="handleCloseCreationModal" :solution-id="toEdit" />
 </template>
 
 <style>
