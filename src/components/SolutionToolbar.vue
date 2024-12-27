@@ -34,14 +34,14 @@ const emit = defineEmits<{
     editSolution: [solutionId: number]
 }>()
 
-const { solveSolution, loadSolutionApi, loadIndictments, printSolution, printSolvePayload, id } = useSolutionState()
+const { solveSolution, loadSolutionApi, loadIndictments, printSolution, printSolvePayload, solution } = useSolutionState()
 
 const scoreLoaded = computed(() => {
     return props.score !== ""
 })
 
 function handleEditSolution() {
-    console.log('editSolution', id)
-    emit('editSolution', id)
+    console.log('editSolution', solution.id)
+    emit('editSolution', solution.id)
 }
 </script>

@@ -9,7 +9,7 @@
             v-focus
         >
         <div v-else>
-            <label @click="toggleEdit"> {{ name }} </label>
+            <label @click="toggleEdit"> {{ solution.name }} </label>
         </div>
     </div>
 </template>
@@ -22,10 +22,10 @@ const vFocus = (el: HTMLInputElement) => {
     el.focus()
 }
 
-const { name, changeName } = useSolutionState()
+const { solution, changeName } = useSolutionState()
 
 const edit = ref(false)
-const solutionName = ref<string>(name.value)
+const solutionName = ref<string>(solution.name)
 
 const handleSave = () => {
     changeName(solutionName.value)

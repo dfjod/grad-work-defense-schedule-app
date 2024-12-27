@@ -51,17 +51,17 @@ const solution = ref<Solution>({
     indictments: [],
 })
 
-const solutionPersons = ref<Person[]>([])
+const solutionPersons = ref<number[]>([])
 
 function colorSelected(person: Person): string | null {
-    return solutionPersons.value.includes(person) ? 'light-gray' : null
+    return solutionPersons.value.includes(person.id) ? 'light-gray' : null
 }
 
 function handleClick(person: Person) {
-    if (!solutionPersons.value.includes(person)) {
-        solutionPersons.value.push(person)
+    if (!solutionPersons.value.includes(person.id)) {
+        solutionPersons.value.push(person.id)
     } else {
-        solutionPersons.value = solutionPersons.value.filter(p => p !== person)
+        solutionPersons.value = solutionPersons.value.filter(pId => pId !== person.id)
     }
 }
 

@@ -8,9 +8,9 @@ const props = defineProps<{
     sessionId: number
 }>()
 
-const { sessions } = useSolutionState()
+const { solution } = useSolutionState()
 
-const session: Session = sessions.value.find((session: Session) => session.id === props.sessionId)
+const session: Session = solution.sessions.find((session: Session) => session.id === props.sessionId)
 
 const formatDate = (date: string) => {
     const options: Intl.DateTimeFormatOptions = {

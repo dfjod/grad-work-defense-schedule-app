@@ -145,7 +145,7 @@ export default () => {
         person.timeConstraints.splice(index, 1)
     }
 
-    function getStudents() {
+    function getStudents(): Person[] {
         return persons.value.filter(p => p.isStudent)
     }
 

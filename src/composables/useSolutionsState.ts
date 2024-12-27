@@ -1,4 +1,5 @@
 import { type Solution } from "@/types/app";
+import usePersonState from "@/composables/usePersonState";
 import { ref } from "vue";
 
 const solutions = ref<Solution[]>([
@@ -27,28 +28,8 @@ const solutions = ref<Solution[]>([
             },
         ],
         persons: [
-            // Including some previous persons
-            {
-                id: 1,
-                isStudent: true,
-                name: 'Alice Johnson',
-                timeConstraints: [
-                    { id: 1, from: '2024-12-10T08:00:00', to: '2024-12-10T10:00:00' },
-                    { id: 2, from: '2024-12-11T14:00:00', to: '2024-12-11T16:00:00' },
-                ],
-                indictments: [],
-                thesis: 1,
-            },
-            {
-                id: 2,
-                isStudent: false,
-                name: 'Dr. Robert Smith',
-                timeConstraints: [
-                    { id: 3, from: '2024-12-12T09:00:00', to: '2024-12-12T11:00:00' },
-                    { id: 4, from: '2024-12-14T13:00:00', to: '2024-12-14T15:00:00' },
-                ],
-                indictments: [],
-            },
+            1,
+            2,
         ],
         theses: null,
         indictments: [],
@@ -78,28 +59,8 @@ const solutions = ref<Solution[]>([
             },
         ],
         persons: [
-            // Including other previous persons
-            {
-                id: 5,
-                isStudent: true,
-                name: 'Michael Brown',
-                timeConstraints: [
-                    { id: 9, from: '2024-12-17T09:00:00', to: '2024-12-17T11:00:00' },
-                    { id: 10, from: '2024-12-19T13:00:00', to: '2024-12-19T15:00:00' },
-                ],
-                indictments: [],
-                thesis: 3,
-            },
-            {
-                id: 6,
-                isStudent: false,
-                name: 'Dr. Susan Clark',
-                timeConstraints: [
-                    { id: 11, from: '2024-12-18T08:30:00', to: '2024-12-18T10:30:00' },
-                    { id: 12, from: '2024-12-20T14:00:00', to: '2024-12-20T16:00:00' },
-                ],
-                indictments: [],
-            },
+            5,
+            6,
         ],
         theses: null,
         indictments: [],
@@ -108,13 +69,23 @@ const solutions = ref<Solution[]>([
 
 export default () => {
     function saveSolution(s: Solution) {
-        const index = solutions.value.findIndex((sol) => sol.id === s.id);
         s.id = s.id || solutions.value.length + 1;
+        s.theses = parseTheses(s.persons);
+
+        const index = solutions.value.findIndex(sol => sol.id === s.id);
         if (index === -1) {
             solutions.value.push(s);
         } else {
             solutions.value[index] = s;
         }
+    }
+
+    function parseTheses(personIds: number[]): number[] {
+        return usePersonState().getStudents().map(student => {
+            if (personIds.includes(student.id)) {
+                return student.thesis
+            }
+        })
     }
 
     function getSolutionById(id: number): Solution | undefined {

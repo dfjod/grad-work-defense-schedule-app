@@ -11,7 +11,7 @@ function handleEditSolution(solutionId: number) {
     emit('editSolution', solutionId)
 }
 
-const { score, sessions, solutionLoaded, solved } = useSolutionState()
+const { solutionLoaded, solution } = useSolutionState()
 // TODO: Does this computed property belong here?
 </script>
 
@@ -20,12 +20,12 @@ const { score, sessions, solutionLoaded, solved } = useSolutionState()
         Import a solution to get started
     </div>
     <div v-else class="selected">
-        <SolutionToolbar :score="score" @edit-solution="handleEditSolution"/>
-        <div v-if="!solved" class="not-selected">
+        <SolutionToolbar :score="solution.score" @edit-solution="handleEditSolution"/>
+        <div v-if="!solution.solved" class="not-selected">
             Press Solve to see the solution
         </div>
         <div v-else class="session-wrapper">
-            <SessionComponent v-for="session of sessions" :key="session.id" :sessionId="session.id" />
+            <SessionComponent v-for="session of solution.sessions" :key="session.id" :sessionId="session.id" />
         </div>
     </div>
 </template>
