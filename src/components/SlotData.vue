@@ -15,23 +15,16 @@
 </template>
 
 <script setup lang="ts">
-import { type Person, type Thesis, type ConstraintMatch } from '@/types/app';
-import { ref, onUpdated } from 'vue';
+import { type Person, type Thesis, type ConstraintMatch } from '@/types/app'
+import { ref } from 'vue'
 
-const props = defineProps<{
+defineProps<{
     object: Person | Thesis
+    constraints: ConstraintMatch[]
     hasIndictment: boolean
 }>()
 
 const showIndictment = ref<boolean>(false)
-
-let constraints: ConstraintMatch[] = []
-
-onUpdated(() => {
-    constraints = props.object.indictments.map(indictment => {
-        return indictment.constraintMatches
-    })[0]
-})
 </script>
 
 <style scoped>

@@ -24,7 +24,6 @@ export interface Person {
     isStudent: boolean
     name: string
     timeConstraints: TimeConstraint[]
-    indictments: Indictment[]
     thesis?: number
 }
 
@@ -40,7 +39,6 @@ export interface Thesis {
     author: number
     supervisor: number
     reviewer: number
-    indictments: Indictment[]
 }
 
 export interface Indictment {

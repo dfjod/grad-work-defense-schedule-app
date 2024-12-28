@@ -10,11 +10,8 @@ const props = defineProps<{
 }>()
 
 const { solution } = useSolutionState()
-const { findThesisById } = useThesesState()
 
 const session: Session = solution.sessions.find((session: Session) => session.id === props.sessionId)
-
-const thesisList = session.theses.map((thesisId: number) => findThesisById(thesisId))
 
 const formatDate = (date: string) => {
     const options: Intl.DateTimeFormatOptions = {

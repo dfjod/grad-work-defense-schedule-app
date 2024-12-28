@@ -9,18 +9,16 @@ const persons = ref<Person[]>([
         timeConstraints: [
             {
                 id: 1,
-                from: "2025-1-2T10:45:00",
-                to: "2025-1-2T23:59:59",
+                from: '2025-1-2T10:45:00',
+                to: '2025-1-2T23:59:59',
             },
         ],
-        indictments: [],
     },
     {
         id: 2,
         name: 'prof. Juris Borzovs',
         isStudent: false,
         timeConstraints: [],
-        indictments: [],
     },
     {
         id: 3,
@@ -29,11 +27,10 @@ const persons = ref<Person[]>([
         timeConstraints: [
             {
                 id: 2,
-                from: "2025-1-2T09:30:00",
-                to: "2025-1-2T23:59:59",
+                from: '2025-1-2T09:30:00',
+                to: '2025-1-2T23:59:59',
             },
         ],
-        indictments: [],
     },
     {
         id: 4,
@@ -42,18 +39,16 @@ const persons = ref<Person[]>([
         timeConstraints: [
             {
                 id: 3,
-                from: "2025-1-2T08:45:00",
-                to: "2025-1-2T09:59:59",
+                from: '2025-1-2T08:45:00',
+                to: '2025-1-2T09:59:59',
             },
         ],
-        indictments: [],
     },
     {
         id: 5,
         name: 'prof. Karlis Podnieks',
         isStudent: false,
         timeConstraints: [],
-        indictments: [],
     },
     {
         id: 6,
@@ -62,11 +57,10 @@ const persons = ref<Person[]>([
         timeConstraints: [
             {
                 id: 4,
-                from: "2025-1-2T09:30:00",
-                to: "2025-1-2T10:00:00",
+                from: '2025-1-2T09:30:00',
+                to: '2025-1-2T10:00:00',
             },
         ],
-        indictments: [],
     },
     {
         id: 7,
@@ -75,18 +69,16 @@ const persons = ref<Person[]>([
         timeConstraints: [
             {
                 id: 5,
-                from: "2025-1-2T10:15:00",
-                to: "2025-1-2T23:59:59",
+                from: '2025-1-2T10:15:00',
+                to: '2025-1-2T23:59:59',
             },
         ],
-        indictments: [],
     },
     {
         id: 8,
         name: 'Jānis Jaunsudrabiņš',
         isStudent: true,
         timeConstraints: [],
-        indictments: [],
         thesis: 1,
     },
     {
@@ -94,7 +86,6 @@ const persons = ref<Person[]>([
         name: 'Kārlis Skalbe',
         isStudent: true,
         timeConstraints: [],
-        indictments: [],
         thesis: 2,
     },
     {
@@ -102,7 +93,6 @@ const persons = ref<Person[]>([
         name: 'Rūdolfs Blaumanis',
         isStudent: true,
         timeConstraints: [],
-        indictments: [],
         thesis: 3,
     },
     {
@@ -110,7 +100,6 @@ const persons = ref<Person[]>([
         name: 'Alberts Bels',
         isStudent: true,
         timeConstraints: [],
-        indictments: [],
         thesis: 4,
     },
     {
@@ -118,7 +107,6 @@ const persons = ref<Person[]>([
         name: 'Vilis Plūdons',
         isStudent: true,
         timeConstraints: [],
-        indictments: [],
         thesis: 5,
     },
     {
@@ -126,7 +114,6 @@ const persons = ref<Person[]>([
         name: 'Andrejs Pumpurs',
         isStudent: true,
         timeConstraints: [],
-        indictments: [],
         thesis: 6,
     },
     {
@@ -134,7 +121,6 @@ const persons = ref<Person[]>([
         name: 'Aleksandrs Čaks',
         isStudent: true,
         timeConstraints: [],
-        indictments: [],
         thesis: 7,
     },
     {
@@ -142,7 +128,6 @@ const persons = ref<Person[]>([
         name: 'Vizma Belševica',
         isStudent: true,
         timeConstraints: [],
-        indictments: [],
         thesis: 8,
     },
 ])

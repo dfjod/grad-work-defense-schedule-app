@@ -4,6 +4,8 @@ import SlotData from '@/components/SlotData.vue'
 import usePersonState from '@/composables/usePersonState'
 import useThesesState from '@/composables/useThesesState'
 import { ref, computed, onMounted } from 'vue'
+import useSolutionState from '@/composables/useSolutionState'
+import { get } from 'node_modules/axios/index.cjs'
 
 const props = defineProps<{
     thesisId: number
@@ -11,6 +13,7 @@ const props = defineProps<{
 
 const { findThesisById } = useThesesState()
 const { getPersonById } = usePersonState()
+const { getPersonConstraints } = useSolutionState()
 
 const thesis = findThesisById(props.thesisId)
 
@@ -20,8 +23,8 @@ const reviewer = getPersonById(thesis.reviewer)
 
 const supervisor = getPersonById(thesis.supervisor)
 
-function hasIndictment(obj: Person | Thesis): boolean {
-    return obj.indictments.length > 0
+function hasIndictment(person: Person): boolean {
+    return getPersonConstraints(person.id).length > 0
 }
 
 const showIndictments = ref<boolean>(false)
@@ -36,10 +39,10 @@ onMounted(() => {
 
 <template>
     <tr @mouseover="showIndictments = true" @mouseleave="showIndictments = false">
-        <SlotData :object="author" :hasIndictment="hasIndictment(author)" />
-        <SlotData :object="thesis" :hasIndictment="hasIndictment(thesis)" />
-        <SlotData :object="supervisor" :hasIndictment="hasIndictment(supervisor)" />
-        <SlotData :object="reviewer" :hasIndictment="hasIndictment(reviewer)" />
+        <SlotData :object="author" :hasIndictment="hasIndictment(author)" :constraints="getPersonConstraints(author.id)" />
+        <SlotData :object="thesis" :hasIndictment="false" :constraints="[]"/>
+        <SlotData :object="supervisor" :hasIndictment="hasIndictment(supervisor)" :constraints="getPersonConstraints(supervisor.id)" />
+        <SlotData :object="reviewer" :hasIndictment="hasIndictment(reviewer)" :constraints="getPersonConstraints(reviewer.id)" />
     </tr>
 </template>
 

@@ -8,7 +8,6 @@ const theses = ref<Thesis[]>([
         author: 8,
         supervisor: 1,
         reviewer: 2,
-        indictments: [],
     },
     {
         id: 2,
@@ -16,7 +15,6 @@ const theses = ref<Thesis[]>([
         author: 9,
         supervisor: 2,
         reviewer: 3,
-        indictments: [],
     },
     {
         id: 3,
@@ -24,7 +22,6 @@ const theses = ref<Thesis[]>([
         author: 10,
         supervisor: 3,
         reviewer: 4,
-        indictments: [],
     },
     {
         id: 4,
@@ -32,7 +29,6 @@ const theses = ref<Thesis[]>([
         author: 11,
         supervisor: 5,
         reviewer: 1,
-        indictments: [],
     },
     {
         id: 5,
@@ -40,7 +36,6 @@ const theses = ref<Thesis[]>([
         author: 12,
         supervisor: 6,
         reviewer: 5,
-        indictments: [],
     },
     {
         id: 6,
@@ -48,7 +43,6 @@ const theses = ref<Thesis[]>([
         author: 13,
         supervisor: 7,
         reviewer: 3,
-        indictments: [],
     },
     {
         id: 7,
@@ -56,7 +50,6 @@ const theses = ref<Thesis[]>([
         author: 14,
         supervisor: 7,
         reviewer: 1,
-        indictments: [],
     },
     {
         id: 8,
@@ -64,7 +57,6 @@ const theses = ref<Thesis[]>([
         author: 15,
         supervisor: 6,
         reviewer: 4,
-        indictments: [],
     },
 ])
 
