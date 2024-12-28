@@ -119,7 +119,7 @@ function mapApiThesisList(thesesApi: ThesisApi[]): number[] {
 function mapAppSessions(sessions: Session[], solved: boolean): SessionApi[] {
     return sessions.map(session => ({
         sessionId: session.id,
-        startingAt: session.startDate,
+        startingAt: timeStringToArray(session.startDate),
         slotDurationMinutes: session.slotDuration,
         thesisList: solved ? mapAppThesesForSession(session.id, session.theses, session.startDate, session.slotDuration) : [],
         room: session.room,
@@ -140,8 +140,8 @@ function mapAppPersons(personIds: number[]): PersonApi[] {
 function mapAppTimeConstraints(timeConstraints: TimeConstraint[]): TimeConstraintApi[] {
     return timeConstraints.map(timeConstraint => ({
         timeConstraintId: timeConstraint.id,
-        from: timeConstraint.from,
-        to: timeConstraint.to,
+        from: timeStringToArray(timeConstraint.from),
+        to: timeStringToArray(timeConstraint.to),
     }))
 }
 
@@ -187,4 +187,20 @@ function mapAppThesesForSession(
             cascadeStartsAt: startsAt,
         }
     })
+}
+
+function arrayToTimeString(arr: number[]): string {
+    const [year, month, day, hour, minute, second = 0] = arr
+    return `${year}-${month}-${day}T${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:${String(second).padStart(2, '0')}`
+}
+
+function timeStringToArray(timeString: string): number[] {
+    if (typeof timeString !== 'string' || !timeString.includes('T')) {
+        throw new Error('Input must be a valid ISO-like time string.')
+    }
+
+    const [datePart, timePart] = timeString.split('T')
+    const [year, month, day] = datePart.split('-').map(Number)
+    const [hour, minute, second] = timePart.split(':').map(Number)
+    return [year, month, day, hour, minute, second || 0]
 }

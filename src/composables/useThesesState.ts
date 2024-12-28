@@ -4,34 +4,66 @@ import { ref, readonly } from "vue"
 const theses = ref<Thesis[]>([
     {
         id: 1,
-        name: 'Efficient Algorithms for Data Sorting',
-        author: 1, // Alice Johnson
-        supervisor: 2, // Dr. Robert Smith
-        reviewer: 3, // Dr. Emily Davis
+        name: 'Baltā kvantu kriptogrāfija',
+        author: 8,
+        supervisor: 1,
+        reviewer: 2,
         indictments: [],
     },
     {
         id: 2,
-        name: 'Advanced AI Techniques in Robotics',
-        author: 4, // John Doe
-        supervisor: 3, // Dr. Emily Davis
-        reviewer: 2, // Dr. Robert Smith
+        name: 'Programmatūras kvalitātes dzirnavas',
+        author: 9,
+        supervisor: 2,
+        reviewer: 3,
         indictments: [],
     },
     {
         id: 3,
-        name: 'Machine Learning Applications in Healthcare',
-        author: 5, // Michael Brown
-        supervisor: 6, // Dr. Susan Clark
-        reviewer: 7, // Dr. James Taylor
+        name: 'Kiberfizikālās sistēmas Silmačos',
+        author: 10,
+        supervisor: 3,
+        reviewer: 4,
         indictments: [],
     },
     {
         id: 4,
-        name: 'Exploring Quantum Computing Algorithms',
-        author: 8, // Emily White
-        supervisor: 7, // Dr. James Taylor
-        reviewer: 9, // Dr. Karen Martinez
+        name: 'Datizrace būrī',
+        author: 11,
+        supervisor: 5,
+        reviewer: 1,
+        indictments: [],
+    },
+    {
+        id: 5,
+        name: 'Mazā Anduļa datu noliktavas',
+        author: 12,
+        supervisor: 6,
+        reviewer: 5,
+        indictments: [],
+    },
+    {
+        id: 6,
+        name: 'Tīklplēsis',
+        author: 13,
+        supervisor: 7,
+        reviewer: 3,
+        indictments: [],
+    },
+    {
+        id: 7,
+        name: 'Neironu skartie',
+        author: 14,
+        supervisor: 7,
+        reviewer: 1,
+        indictments: [],
+    },
+    {
+        id: 8,
+        name: 'Billes datu noliktavas',
+        author: 15,
+        supervisor: 6,
+        reviewer: 4,
         indictments: [],
     },
 ])
