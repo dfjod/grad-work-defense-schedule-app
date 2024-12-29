@@ -37,7 +37,7 @@
 <script setup lang="ts">
 import { type Session } from '@/types/app'
 import { ref } from 'vue'
-import BaseButton from './BaseButton.vue'
+import BaseButton from '@/components/ui/BaseButton.vue'
 
 const sessions = defineModel<Session[]>()
 

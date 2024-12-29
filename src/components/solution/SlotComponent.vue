@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { type Thesis, type Person } from '@/types/app'
-import SlotData from '@/components/SlotData.vue'
+import type { Person } from '@/types/app'
+import SlotData from '@/components/solution/SlotData.vue'
 import usePersonState from '@/composables/usePersonState'
 import useThesesState from '@/composables/useThesesState'
-import { ref, computed, onMounted } from 'vue'
+import { ref } from 'vue'
 import useSolutionState from '@/composables/useSolutionState'
-import { get } from 'node_modules/axios/index.cjs'
 
 const props = defineProps<{
     thesisId: number
@@ -26,19 +25,10 @@ const supervisor = getPersonById(thesis.supervisor)
 function hasIndictment(person: Person): boolean {
     return getPersonConstraints(person.id).length > 0
 }
-
-const showIndictments = ref<boolean>(false)
-onMounted(() => {
-    console.log('SlotComponent mounted')
-    console.log(thesis)
-    console.log(author)
-    console.log(reviewer)
-    console.log(supervisor)
-})
 </script>
 
 <template>
-    <tr @mouseover="showIndictments = true" @mouseleave="showIndictments = false">
+    <tr>
         <SlotData :object="author" :hasIndictment="hasIndictment(author)" :constraints="getPersonConstraints(author.id)" />
         <SlotData :object="thesis" :hasIndictment="false" :constraints="[]"/>
         <SlotData :object="supervisor" :hasIndictment="hasIndictment(supervisor)" :constraints="getPersonConstraints(supervisor.id)" />

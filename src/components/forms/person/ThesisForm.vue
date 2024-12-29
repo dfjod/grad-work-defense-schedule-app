@@ -38,7 +38,7 @@
 
 <script setup lang="ts">
 import { type Thesis, type Person } from '@/types/app'
-import BaseButton from './BaseButton.vue'
+import BaseButton from '@/components/ui/BaseButton.vue'
 import usePersonState from '@/composables/usePersonState'
 import useThesesState from '@/composables/useThesesState'
 import { computed, ref, onMounted } from 'vue'

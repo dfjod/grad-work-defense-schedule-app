@@ -55,16 +55,16 @@
 </template>
 
 <script setup lang="ts">
-import { type Person } from '@/types/app';
-import BaseButton from '@/components/BaseButton.vue';
-import BaseToolbar from '@/components/BaseToolbar.vue';
-import ModalComponent from '@/components/ModalComponent.vue';
+import { type Person } from '@/types/app'
+import BaseButton from '@/components/ui/BaseButton.vue'
+import BaseToolbar from '@/components/ui/BaseToolbar.vue'
+import ModalComponent from '@/components/ui/ModalComponent.vue'
 import usePersonState from '@/composables/usePersonState'
-import TimeConstraintForm from '@/components/TimeConstraintForm.vue';
-import ThesisForm from '@/components/ThesisForm.vue'
+import TimeConstraintForm from '@/components/forms/person/TimeConstraintForm.vue'
+import ThesisForm from '@/components/forms/person/ThesisForm.vue'
 import JsonEditor from 'vue3-ts-jsoneditor'
 import { computed, ref } from 'vue'
-import PersonList from './PersonList.vue';
+import PersonList from '@/components/shared/PersonList.vue'
 
 const { persons, savePerson, deletePerson, saveTimeConstraint, deleteTimeConstraint } = usePersonState()
 const hasPersons = computed(() => persons.value.length > 0)

@@ -1,8 +1,10 @@
 <template>
     <BaseToolbar>
         <template #left>
-            <div v-if="scoreLoaded" class="score">
-                Score: <strong>{{ props.score }}</strong>
+            <div v-if="score" class="score">
+                <IndictmentButton level="Hard" :score="score.hard" />
+                <IndictmentButton level="Medium" :score="score.medium" />
+                <IndictmentButton level="Soft" :score="score.soft" />
             </div>
         </template>
         <template #middle>
@@ -20,28 +22,31 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import BaseButton from '@/components/BaseButton.vue';
-import SolutionTitle from '@/components/SolutionTitle.vue';
-import useSolutionState from '@/composables/useSolutionState';
-import BaseToolbar from './BaseToolbar.vue';
+import BaseButton from '@/components/ui/BaseButton.vue'
+import SolutionTitle from '@/components/solution/SolutionTitle.vue'
+import useSolutionState from '@/composables/useSolutionState'
+import BaseToolbar from '@/components/ui/BaseToolbar.vue'
+import type { Score } from '@/types/app'
+import IndictmentButton from './IndictmentButton.vue'
 
-const props = defineProps<{
-    score: string
+defineProps<{
+    score: Score | null
 }>()
 
-const emit = defineEmits<{
+const emits = defineEmits<{
     editSolution: [solutionId: number]
 }>()
 
 const { solveSolution, loadSolutionApi, loadIndictments, printSolution, printSolvePayload, solution } = useSolutionState()
 
-const scoreLoaded = computed(() => {
-    return props.score !== ""
-})
-
 function handleEditSolution() {
-    console.log('editSolution', solution.id)
-    emit('editSolution', solution.id)
+    emits('editSolution', solution.id)
 }
 </script>
+
+<style scoped>
+.score {
+    display: flex;
+    gap: 10px;
+}
+</style>

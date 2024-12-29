@@ -1,6 +1,12 @@
 import { reactive, readonly } from 'vue'
 import { type Solution } from '@/types/app'
-import mapper from '@/services/mapper'
+import {
+    mapApiSessions,
+    mapApiScore,
+    mapAppSolutionForIndictments,
+    mapAppSolutionForSolving,
+    mapApiIndictments,
+} from '@/services/mapper'
 import api from '@/services/api'
 import type { Indictment as IndictmentApi} from '@/types/api'
 import type { Indictment, ConstraintMatch } from '@/types/app'
@@ -14,7 +20,8 @@ const solution = reactive<Solution>({
     sessions: [],
     persons: [],
     theses: [],
-    indictments: [],
+    personIndictments: [],
+    thesesIndictments: [],
 })
 
 export default () => {
@@ -35,14 +42,11 @@ export default () => {
         }
 
         const fetchedSolution = await api.solution(solution.id)
-        const sessions = mapper.mapApiSessions(fetchedSolution.sessions)
-        console.log('Fetched solution:', fetchedSolution)
-        console.log('Mapped sessions:', sessions)
+        const sessions = mapApiSessions(fetchedSolution.sessions)
 
         solution.sessions = sessions
-        solution.score = fetchedSolution.score
+        solution.score = mapApiScore(fetchedSolution.score)
         solution.solved = true
-        console.log('Solution loaded:', solution)
     }
 
     async function loadIndictments() {
@@ -57,11 +61,10 @@ export default () => {
         }
 
         checkAndSetChangedState()
-        console.log('Solution changed state:', solution.changed)
 
         let fetchIndictments: IndictmentApi[] = []
 
-        if (solution.indictments.length === 0) {
+        if (solution.personIndictments.length === 0 && solution.thesesIndictments.length === 0) {
             console.log('Indictments not loaded, fetching them')
             fetchIndictments = await api.indictments(solution.id)
         }
@@ -72,12 +75,13 @@ export default () => {
             solution.sessions.forEach(session => {
                 session.thesesPrevious = session.theses
             })
-            fetchIndictments = await api.putandindictments(mapper.mapAppSolutionForIndictments(solution))
+            fetchIndictments = await api.putandindictments(mapAppSolutionForIndictments(solution))
         }
 
         if (fetchIndictments.length > 0) {
-            const mappedIndictments = mapper.mapApiIndictments(fetchIndictments)
-            solution.indictments = mappedIndictments
+            const mappedIndictments = mapApiIndictments(fetchIndictments)
+            solution.personIndictments = mappedIndictments[0] // At index 0 are person indictments
+            solution.thesesIndictments = mappedIndictments[1] // At index 1 are thesis indictments
         } else {
             console.log('Solution has not changed, indictments are up to date')
         }
@@ -85,7 +89,7 @@ export default () => {
 
     async function solveSolution() {
         if (solution.id !== null) {
-            const requestObj = mapper.mapAppSolutionForSolving(solution)
+            const requestObj = mapAppSolutionForSolving(solution)
             await api.solve(requestObj)
         } else {
             console.error('Solution not loaded')
@@ -93,7 +97,7 @@ export default () => {
     }
 
     function printSolvePayload() {
-        console.log(mapper.mapAppSolutionForIndictments(solution))
+        console.log(mapAppSolutionForIndictments(solution))
     }
 
     const solutionLoaded = () => solution.id !== null
@@ -141,14 +145,27 @@ export default () => {
     }
 
     function getPersonIndictments(personId: number): Indictment[] {
-        return solution.indictments.filter(indictment => indictment.id === personId && indictment.class === 'Person')
+        return solution.personIndictments.filter(indictment => indictment.id === personId && indictment.class === 'Person')
+    }
+
+    function getThesisIndictments(thesisId: number): Indictment[] {
+        return solution.thesesIndictments.filter(indictment => indictment.id === thesisId && indictment.class === 'Thesis')
     }
 
     function getPersonConstraints(personId: number): ConstraintMatch[] {
         const indictments = getPersonIndictments(personId)
         const constraints = indictments.map(indictment => indictment.constraintMatches)
-        console.log(constraints.flat())
         return constraints.flat()
+    }
+
+    function getThesisConstraints(thesisId: number): ConstraintMatch[] {
+        const indictments = getThesisIndictments(thesisId)
+        const constraints = indictments.map(indictment => indictment.constraintMatches)
+        return constraints.flat()
+    }
+
+    function getSessionWithId(sessionId: number) {
+        return solution.sessions.find(session => session.id === sessionId)
     }
 
     return {
@@ -163,5 +180,7 @@ export default () => {
         printSolution,
         printSolvePayload,
         getPersonConstraints,
+        getThesisConstraints,
+        getSessionWithId
     }
 }

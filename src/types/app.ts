@@ -3,11 +3,12 @@ export interface Solution {
     solved: boolean
     changed: boolean
     name: string
-    score: string
+    score: Score | null
     sessions: Session[]
     persons: number[]
     theses: number[] | null
-    indictments: Indictment[]
+    thesesIndictments: Indictment[]
+    personIndictments: Indictment[]
 }
 
 export interface Session {
@@ -50,10 +51,11 @@ export interface Indictment {
 }
 export interface ConstraintMatch {
     name: string
-    score: string
+    score: Score
 }
 
-export interface SolutionElement {
-    id: number
-    title: string
+export interface Score {
+    hard: number
+    medium: number
+    soft: number
 }

@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { ref, type Ref } from 'vue'
-import SolutionListComponent from './components/SolutionListComponent.vue'
-import SolutionComponent from './components/SolutionComponent.vue';
+import { ref } from 'vue'
+import SolutionListComponent from '@/components/layout/SolutionListComponent.vue'
+import SolutionComponent from '@/components/layout/SolutionComponent.vue'
 import useSolution from './composables/useSolutionState'
 import { type Solution } from '@/types/app';
-import ImportForm from '@/components/ImportForm.vue';
-import PersonForm from './components/PersonForm.vue';
-import SolutionForm from './components/SolutionForm.vue';
+import ImportForm from '@/components/forms/import/ImportForm.vue';
+import PersonForm from './components/forms/person/PersonForm.vue';
+import SolutionForm from './components/forms/solution/SolutionForm.vue';
 
 const { loadSolution } = useSolution()
 

@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import ModalComponent from '@/components/ModalComponent.vue';
+import ModalComponent from '@/components/ui/ModalComponent.vue';
 import JsonEditor from 'vue3-ts-jsoneditor'
 import { ref } from 'vue'
 import type { Solution } from '@/types/app';

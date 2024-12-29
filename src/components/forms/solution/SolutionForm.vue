@@ -22,10 +22,10 @@
 
 <script setup lang="ts">
 import { type Solution, type Person } from '@/types/app'
-import ModalComponent from '@/components/ModalComponent.vue'
-import PersonList from '@/components/PersonList.vue'
-import SessionForm from '@/components/SessionForm.vue'
-import BaseButton from '@/components/BaseButton.vue'
+import ModalComponent from '@/components/ui/ModalComponent.vue'
+import PersonList from '@/components/shared/PersonList.vue'
+import SessionForm from '@/components/forms/solution/SessionForm.vue'
+import BaseButton from '@/components/ui/BaseButton.vue'
 import useSolutionsState from '@/composables/useSolutionsState'
 import { ref, onMounted } from 'vue'
 
@@ -77,9 +77,7 @@ function handleCloseModal() {
 
 onMounted(() => {
     if (props.solutionId) {
-        console.log('Editing solution', props.solutionId)
         const solutionToEdit = getSolutionById(props.solutionId)
-        console.log('Solution to edit', solutionToEdit)
         solution.value = solutionToEdit
         solutionPersons.value = solutionToEdit.persons
     }

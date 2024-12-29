@@ -4,16 +4,16 @@
             <input type="text" v-model="search" placeholder="Search for a person" />
         </div>
         <div class="person-list">
-            <PersonFormSlot v-for="person of matchingPersons" :person="person" :key="person.id" :color-function="colorFunction"
+            <PersonListSlot v-for="person of matchingPersons" :person="person" :key="person.id" :color-function="colorFunction"
                 @person-clicked="handleClickEvent" />
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { type Person } from '@/types/app';
-import PersonFormSlot from '@/components/PersonFormSlot.vue';
-import usePersonState from '@/composables/usePersonState';
+import type { Person } from '@/types/app'
+import PersonListSlot from '@/components/shared/PersonListSlot.vue'
+import usePersonState from '@/composables/usePersonState'
 import { computed, ref } from 'vue'
 import fuzzysort from 'fuzzysort'
 

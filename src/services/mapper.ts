@@ -1,22 +1,21 @@
-import {
-    type ConstraintMatch as ConstraintMatchApi,
-    type Indictment as IndictmentApi,
-    type Person as PersonApi,
-    type Session as SessionApi,
-    type SolutionRequest,
-    type SolutionResponse,
-    type Thesis as ThesisApi,
-    type TimeConstraint as TimeConstraintApi,
+import type {
+    ConstraintMatch as ConstraintMatchApi,
+    Indictment as IndictmentApi,
+    Person as PersonApi,
+    Session as SessionApi,
+    SolutionRequest,
+    SolutionResponse,
+    Thesis as ThesisApi,
+    TimeConstraint as TimeConstraintApi,
 } from '@/types/api'
 
-import {
-    type ConstraintMatch,
-    type Indictment,
-    type Person,
-    type Session,
-    type Solution,
-    type Thesis,
-    type TimeConstraint,
+import type {
+    ConstraintMatch,
+    Indictment,
+    Score,
+    Session,
+    Solution,
+    TimeConstraint,
 } from '@/types/app'
 
 import usePersonState from '@/composables/usePersonState'
@@ -26,67 +25,83 @@ import moment from 'moment'
 const { getPersonById } = usePersonState()
 const { findThesisById } = useThesesState()
 
-export default {
-    // As solutions are managed locally only the session must be mapped from the API
-    mapApiSessions(sessionsApi: SessionApi[]): Session[] {
-        const sessions: Session[] = []
+// As solutions are managed locally only the session must be mapped from the API
+export function mapApiSessions(sessionsApi: SessionApi[]): Session[] {
+    const sessions: Session[] = []
 
-        for (const sessionApi of sessionsApi) {
-            const session: Session = {
-                id: sessionApi.sessionId,
-                startDate: sessionApi.startingAt,
-                slotDuration: sessionApi.slotDurationMinutes,
-                theses: mapApiThesisList(sessionApi.thesisList),
-                thesesPrevious: mapApiThesisList(sessionApi.thesisList),
-                room: sessionApi.room,
-            }
-            sessions.push(session)
+    for (const sessionApi of sessionsApi) {
+        const session: Session = {
+            id: sessionApi.sessionId,
+            startDate: sessionApi.startingAt,
+            slotDuration: sessionApi.slotDurationMinutes,
+            theses: mapApiThesisList(sessionApi.thesisList),
+            thesesPrevious: mapApiThesisList(sessionApi.thesisList),
+            room: sessionApi.room,
+        }
+        sessions.push(session)
+    }
+
+    return sessions
+}
+
+export function mapApiIndictments(indictmentsApi: IndictmentApi[]): Indictment[][] {
+    const personIndictments: Indictment[] = []
+    const thesesIndictments: Indictment[] = []
+
+    for (const indictmentApi of indictmentsApi) {
+        const indictment: Indictment = {
+            id: indictmentApi.indictedObjectID,
+            class: indictmentApi.indictedObjectClass,
+            score: indictmentApi.score,
+            matchCount: indictmentApi.matchCount,
+            constraintMatches: mapApiConstraintMatches(indictmentApi.constraintMatches),
         }
 
-        return sessions
-    },
-
-    mapApiIndictments(indictmentsApi: IndictmentApi[]): Indictment[] {
-        const indictments: Indictment[] = []
-
-        for (const indictmentApi of indictmentsApi) {
-            const indictment: Indictment = {
-                id: indictmentApi.indictedObjectID,
-                class: indictmentApi.indictedObjectClass,
-                score: indictmentApi.score,
-                matchCount: indictmentApi.matchCount,
-                constraintMatches: mapApiConstraintMatches(indictmentApi.constraintMatches),
-            }
-            indictments.push(indictment)
+        if (indictmentApi.indictedObjectClass === 'Person') {
+            personIndictments.push(indictment)
+        } else if (indictmentApi.indictedObjectClass === 'Thesis') {
+            thesesIndictments.push(indictment)
         }
+    }
 
-        return indictments
-    },
+    return [
+        personIndictments,
+        thesesIndictments,
+    ]
+}
 
-    mapAppSolutionForSolving(solution: Solution): SolutionRequest {
-        return {
-            scheduleId: solution.id,
-            persons: mapAppPersons(solution.persons),
-            sessions: mapAppSessions(solution.sessions, solution.solved),
-            thesis: mapAppThesisListForSolving(solution.theses),
-            score: solution.score || null,
-            properties: {
-                sessionSize: 0
-            }
-        }
-    },
+export function mapAppSolutionForSolving(solution: Solution): SolutionRequest {
+    return {
+        scheduleId: solution.id,
+        persons: mapAppPersons(solution.persons),
+        sessions: mapAppSessions(solution.sessions, solution.solved),
+        thesis: mapAppThesisListForSolving(solution.theses),
+        score: solution.score ? mapAppScore(solution.score) : null,
+        properties: {
+            sessionSize: 0,
+        },
+    }
+}
 
-    mapAppSolutionForIndictments(solution: Solution): SolutionRequest {
-        return {
-            scheduleId: solution.id,
-            persons: mapAppPersons(solution.persons),
-            sessions: mapAppSessions(solution.sessions, solution.theses, solution.solved),
-            thesis: solution.theses,
-            score: solution.score || null,
-            properties: {
-                sessionSize: 0
-            }
-        }
+export function mapAppSolutionForIndictments(solution: Solution): SolutionRequest {
+    return {
+        scheduleId: solution.id,
+        persons: mapAppPersons(solution.persons),
+        sessions: mapAppSessions(solution.sessions, solution.theses, solution.solved),
+        thesis: solution.theses,
+        score: solution.score ? mapAppScore(solution.score) : null,
+        properties: {
+            sessionSize: 0,
+        },
+    }
+}
+
+export function mapApiScore(scoreApi: string): Score {
+    const [hard, medium, soft] = scoreApi.split('/')
+    return {
+        hard: Number(hard.replace('hard', '')),
+        medium: Number(medium.replace('medium', '')),
+        soft: Number(soft.replace('soft', '')),
     }
 }
 
@@ -96,7 +111,7 @@ function mapApiConstraintMatches(constraintMatchesApi: ConstraintMatchApi[]): Co
     for (const constraintMatchApi of constraintMatchesApi) {
         const constraintMatch: ConstraintMatch = {
             name: constraintMatchApi.constraintName,
-            score: constraintMatchApi.score,
+            score: mapApiScore(constraintMatchApi.score)
         }
 
         constraintMatches.push(constraintMatch)
@@ -114,6 +129,10 @@ function mapApiThesisList(thesesApi: ThesisApi[]): number[] {
     }
 
     return theses
+}
+
+function mapAppScore(score: Score): string {
+    return `${score.hard}/${score.medium}/${score.soft}`
 }
 
 function mapAppSessions(sessions: Session[], solved: boolean): SessionApi[] {

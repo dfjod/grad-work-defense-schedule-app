@@ -22,10 +22,10 @@
 </template>
 
 <script setup lang="ts">
-import BaseButton from '@/components/BaseButton.vue'
+import BaseButton from '@/components/ui/BaseButton.vue'
 import type { TimeConstraint } from '@/types/app';
 import { ref } from 'vue'
-import TimeConstraintSlot from '@/components/TimeConstraintSlot.vue';
+import TimeConstraintSlot from '@/components/forms/person/TimeConstraintSlot.vue';
 
 const emit = defineEmits<{
     (e: 'saveTimeConstraint', from: string, to: string): void
