@@ -13,9 +13,9 @@
 <script setup lang="ts">
 import type { Person, Thesis } from '@/types/app'
 import ThesisSlotIndictments from '@/components/solution/ThesisSlotIndictments.vue'
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import useSolutionState from '@/composables/useSolutionState'
-import useEventsBus from '@/composables/useEventBus'
+import emitter from '@/services/mitt'
 
 const props = defineProps<{
     object: Person | Thesis
@@ -23,7 +23,6 @@ const props = defineProps<{
 }>()
 
 const { getObjectConstraints } = useSolutionState()
-const { bus } = useEventsBus()
 
 const hasIndictment = ref(false)
 
@@ -33,7 +32,8 @@ const handleClick = () => {
     console.log(hasIndictment.value)
 }
 
-watch(() => bus.value.get('indictments-loaded'), () => {
+emitter.on(`indictments-loaded`, (val) => {
+    console.log("val ThesisSlot", val)
     const constraints = getObjectConstraints(props.object.id, props.objectType)
     hasIndictment.value = constraints.length > 0
 })

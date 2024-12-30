@@ -1,10 +1,16 @@
 <template>
     <BaseToolbar>
         <template #left>
-            <div v-if="score" class="score">
-                <IndictmentButton level="Hard" :score="score.hard" />
-                <IndictmentButton level="Medium" :score="score.medium" />
-                <IndictmentButton level="Soft" :score="score.soft" />
+            <div v-if="score" class="indictment-buttons-wrapper">
+                <div class="indictment-buttons">
+                    <IndictmentLevelButton level="Hard" :score="score.hard" />
+                    <IndictmentLevelButton level="Medium" :score="score.medium" />
+                    <IndictmentLevelButton level="Soft" :score="score.soft" />
+                </div>
+                <div class="indictment-buttons">
+                    <IndictmentObjectButton objectType="person" />
+                    <IndictmentObjectButton objectType="thesis" />
+                </div>
             </div>
         </template>
         <template #middle>
@@ -27,7 +33,8 @@ import SolutionTitle from '@/components/solution/SolutionTitle.vue'
 import useSolutionState from '@/composables/useSolutionState'
 import BaseToolbar from '@/components/ui/BaseToolbar.vue'
 import type { Score } from '@/types/app'
-import IndictmentButton from './IndictmentButton.vue'
+import IndictmentLevelButton from '@/components/solution/IndictmentLevelButton.vue'
+import IndictmentObjectButton from '@/components/solution/IndictmentObjectButton.vue'
 
 defineProps<{
     score: Score | null
@@ -45,8 +52,14 @@ function handleEditSolution() {
 </script>
 
 <style scoped>
-.score {
+.indictment-buttons {
     display: flex;
+    gap: 10px;
+}
+
+.indictment-buttons-wrapper {
+    display: flex;
+    flex-direction: column;
     gap: 10px;
 }
 </style>

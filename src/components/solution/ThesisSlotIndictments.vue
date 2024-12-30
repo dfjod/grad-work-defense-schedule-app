@@ -19,79 +19,49 @@
                 <li v-for="constraint of softConstraints" :key="constraint.name" class="indictment-text">{{ constraint.name }}</li>
             </ul>
         </div>
-        <!-- <ul>
+        <ul v-if="noneSelected && constraints.length > 0">
             <li v-for="constraint of constraints" :key="constraint.name" class="indictment-text">{{ constraint.name }}</li>
-        </ul> -->
+        </ul>
     </span>
 </template>
 
 <script setup lang="ts">
 import type { ConstraintMatch } from '@/types/app'
-import useEventsBus from '@/composables/useEventBus'
 import useSolutionState from '@/composables/useSolutionState';
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
+import emitter from '@/services/mitt';
 
 const props = defineProps<{
     objectId: number
     objectType: 'person' | 'thesis'
 }>()
 
-const { bus } = useEventsBus()
 const { getObjectConstraints, getTypeOfConstraints } = useSolutionState()
-
-const showIndictment = ref(false)
 
 // Selection
 const hardConstraintShowed = ref(false)
 const mediumConstraintShowed = ref(false)
 const softConstraintShowed = ref(false)
+const noneSelected = computed(() => !hardConstraintShowed.value && !mediumConstraintShowed.value && !softConstraintShowed.value)
 
-const constraints = ref<ConstraintMatch[]>([])
-const hardConstraints = ref<ConstraintMatch[]>([])
-const mediumConstraints = ref<ConstraintMatch[]>([])
-const softConstraints = ref<ConstraintMatch[]>([])
+const constraints = ref<ConstraintMatch[]>(getObjectConstraints(props.objectId, props.objectType))
+const hardConstraints = ref<ConstraintMatch[]>(getTypeOfConstraints('hard', constraints.value))
+const mediumConstraints = ref<ConstraintMatch[]>(getTypeOfConstraints('medium', constraints.value))
+const softConstraints = ref<ConstraintMatch[]>(getTypeOfConstraints('soft', constraints.value))
 
-const indictments = computed(() => {
-    const indictments = []
-    if (hardConstraintShowed.value) {
-        indictments.push(...hardConstraints.value)
-    }
-    if (mediumConstraintShowed.value) {
-        indictments.push(...mediumConstraints.value)
-    }
-    if (softConstraintShowed.value) {
-        indictments.push(...softConstraints.value)
-    }
-    return indictments
+emitter.on(`toggle-score-hard`, (val) => {
+    console.log('hardConstraintShowedBus', val)
+    hardConstraintShowed.value = val
 })
 
-const hasIndictment = computed(() => indictments.value.length > 0)
-
-watch(() => bus.value.get('toggle-score-hard'), (val) => {
-    const [hardConstraintShowedBus] = val ?? []
-    console.log('hardConstraintShowedBus', hardConstraintShowedBus)
-    hardConstraintShowed.value = hardConstraintShowedBus
+emitter.on(`toggle-score-medium`, (val) => {
+    console.log('mediumConstraintShowedBus', val)
+    mediumConstraintShowed.value = val
 })
 
-watch(() => bus.value.get('toggle-score-medium'), (val) => {
-    const [mediumConstraintShowedBus] = val ?? []
-    console.log('mediumConstraintShowedBus', mediumConstraintShowedBus)
-    mediumConstraintShowed.value = mediumConstraintShowedBus
-})
-
-watch(() => bus.value.get('toggle-score-soft'), (val) => {
-    const [softConstraintShowedBus] = val ?? []
-    console.log('softConstraintShowedBus', softConstraintShowedBus)
-    softConstraintShowed.value = softConstraintShowedBus
-})
-
-watch(() => bus.value.get('indictments-loaded'), (val) => {
-    const [showIndictmentBus] = val ?? []
-    console.log('indictments loaded', showIndictmentBus)
-    constraints.value = getObjectConstraints(props.objectId, props.objectType)
-    hardConstraints.value = getTypeOfConstraints('hard', constraints.value)
-    mediumConstraints.value = getTypeOfConstraints('medium', constraints.value)
-    softConstraints.value = getTypeOfConstraints('soft', constraints.value)
+emitter.on(`toggle-score-soft`, (val) => {
+    console.log('softConstraintShowedBus', val)
+    softConstraintShowed.value = val
 })
 </script>
 

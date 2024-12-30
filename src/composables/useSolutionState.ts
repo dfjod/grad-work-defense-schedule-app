@@ -10,7 +10,7 @@ import {
 import api from '@/services/api'
 import type { Indictment as IndictmentApi} from '@/types/api'
 import type { Indictment, ConstraintMatch } from '@/types/app'
-import useEventsBus from '@/composables/useEventBus'
+import emitter from '@/services/mitt'
 
 const solution = reactive<Solution>({
     id: null,
@@ -68,6 +68,7 @@ export default () => {
         if (solution.personIndictments.length === 0 && solution.thesesIndictments.length === 0) {
             console.log('Indictments not loaded, fetching them')
             fetchIndictments = await api.indictments(solution.id)
+            console.log("fetched indictments",fetchIndictments)
         }
 
         if (solution.changed) {
@@ -83,7 +84,7 @@ export default () => {
             const mappedIndictments = mapApiIndictments(fetchIndictments)
             solution.personIndictments = mappedIndictments[0] // At index 0 are person indictments
             solution.thesesIndictments = mappedIndictments[1] // At index 1 are thesis indictments
-            useEventsBus().emit('indictments-loaded')
+            emitter.emit('indictments-loaded', "loaded")
         } else {
             console.log('Solution has not changed, indictments are up to date')
         }

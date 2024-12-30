@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import BaseButton from '@/components/ui/BaseButton.vue'
-import useEventsBus from '@/composables/useEventBus'
+import emitter from '@/services/mitt';
 import { ref } from 'vue'
 
 const props = defineProps<{
@@ -12,14 +12,12 @@ const props = defineProps<{
     score: number
 }>()
 
-const { emit } = useEventsBus()
-
 const levelShowed = ref(false)
 
 const handleClick = () => {
     levelShowed.value = !levelShowed.value
     console.log(`${props.level}`, levelShowed.value)
-    emit(`toggle-score-${props.level.toLowerCase()}`, levelShowed.value)
+    emitter.emit(`toggle-score-${props.level.toLowerCase()}`, levelShowed.value)
 }
 </script>
 
