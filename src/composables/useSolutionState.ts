@@ -10,6 +10,7 @@ import {
 import api from '@/services/api'
 import type { Indictment as IndictmentApi} from '@/types/api'
 import type { Indictment, ConstraintMatch } from '@/types/app'
+import useEventsBus from '@/composables/useEventBus'
 
 const solution = reactive<Solution>({
     id: null,
@@ -82,6 +83,7 @@ export default () => {
             const mappedIndictments = mapApiIndictments(fetchIndictments)
             solution.personIndictments = mappedIndictments[0] // At index 0 are person indictments
             solution.thesesIndictments = mappedIndictments[1] // At index 1 are thesis indictments
+            useEventsBus().emit('indictments-loaded')
         } else {
             console.log('Solution has not changed, indictments are up to date')
         }
@@ -144,24 +146,31 @@ export default () => {
         solution.changed = changed
     }
 
-    function getPersonIndictments(personId: number): Indictment[] {
-        return solution.personIndictments.filter(indictment => indictment.id === personId && indictment.class === 'Person')
+    function getObjectIndictments(objectId: number, objectType: 'person' | 'thesis'): Indictment[] {
+        if (objectType === 'person') {
+            return solution.personIndictments.filter(indictment => indictment.id === objectId && indictment.class === 'Person')
+        } else {
+            return solution.thesesIndictments.filter(indictment => indictment.id === objectId && indictment.class === 'Thesis')
+        }
     }
 
-    function getThesisIndictments(thesisId: number): Indictment[] {
-        return solution.thesesIndictments.filter(indictment => indictment.id === thesisId && indictment.class === 'Thesis')
-    }
-
-    function getPersonConstraints(personId: number): ConstraintMatch[] {
-        const indictments = getPersonIndictments(personId)
+    function getObjectConstraints(objectId: number, objectType: 'person' | 'thesis'): ConstraintMatch[] {
+        const indictments = getObjectIndictments(objectId, objectType)
         const constraints = indictments.map(indictment => indictment.constraintMatches)
         return constraints.flat()
     }
 
-    function getThesisConstraints(thesisId: number): ConstraintMatch[] {
-        const indictments = getThesisIndictments(thesisId)
-        const constraints = indictments.map(indictment => indictment.constraintMatches)
-        return constraints.flat()
+    function getTypeOfConstraints(type: 'hard' | 'medium' | 'soft', constraints: ConstraintMatch[]): ConstraintMatch[] {
+        switch (type) {
+            case 'hard':
+                return constraints.filter(constraint => constraint.score.hard < 0)
+            case 'medium':
+                return constraints.filter(constraint => constraint.score.medium < 0)
+            case 'soft':
+                return constraints.filter(constraint => constraint.score.soft < 0)
+            default:
+                return []
+        }
     }
 
     function getSessionWithId(sessionId: number) {
@@ -179,8 +188,8 @@ export default () => {
         solveSolution,
         printSolution,
         printSolvePayload,
-        getPersonConstraints,
-        getThesisConstraints,
+        getObjectConstraints,
+        getTypeOfConstraints,
         getSessionWithId
     }
 }

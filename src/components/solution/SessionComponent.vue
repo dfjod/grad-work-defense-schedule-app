@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Session } from '@/types/app';
-import SlotComponent from '@/components/solution/SlotComponent.vue';
+import ThesisComponent from '@/components/solution/ThesisComponent.vue';
 import draggableComponent from 'vuedraggable';
 import useSolutionState from '@/composables/useSolutionState';
 
@@ -50,7 +50,7 @@ const formatDate = (date: string) => {
             </thead>
             <draggableComponent v-model="session.theses" group="theses" item-key="thesis" tag="tbody">
                 <template #item="{ element: thesis }">
-                    <SlotComponent :key="thesis" :thesisId="thesis" />
+                    <ThesisComponent :key="thesis" :thesisId="thesis" />
                 </template>
             </draggableComponent>
         </table>
