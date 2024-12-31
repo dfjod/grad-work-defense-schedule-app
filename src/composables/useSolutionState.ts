@@ -68,7 +68,6 @@ export default () => {
         if (solution.personIndictments.length === 0 && solution.thesesIndictments.length === 0) {
             console.log('Indictments not loaded, fetching them')
             fetchIndictments = await api.indictments(solution.id)
-            console.log("fetched indictments",fetchIndictments)
         }
 
         if (solution.changed) {

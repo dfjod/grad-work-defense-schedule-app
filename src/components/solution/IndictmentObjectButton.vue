@@ -4,19 +4,20 @@
 
 <script setup lang="ts">
 import BaseButton from '@/components/ui/BaseButton.vue'
-import emitter from '@/services/mitt';
-import { ref } from 'vue';
+import useIndictmentsState from '@/composables/useIndictmentsState'
+import { ref } from 'vue'
 
 const props = defineProps<{
     objectType: 'person' | 'thesis',
 }>()
 
+const { setTypeIndictmentState } = useIndictmentsState()
+
 const typeShowed = ref(false)
 
 const handleClick = () => {
     typeShowed.value = !typeShowed.value
-    console.log(`${props.objectType}`, typeShowed.value)
-    emitter.emit(`indictment-toggle-${props.objectType}-type`, typeShowed.value)
+    setTypeIndictmentState(props.objectType, typeShowed.value)
 }
 </script>
 

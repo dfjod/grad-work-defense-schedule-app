@@ -3,13 +3,13 @@
         <template #left>
             <div v-if="score" class="indictment-buttons-wrapper">
                 <div class="indictment-buttons">
-                    <IndictmentLevelButton level="Hard" :score="score.hard" />
-                    <IndictmentLevelButton level="Medium" :score="score.medium" />
-                    <IndictmentLevelButton level="Soft" :score="score.soft" />
-                </div>
-                <div class="indictment-buttons">
                     <IndictmentObjectButton objectType="person" />
                     <IndictmentObjectButton objectType="thesis" />
+                </div>
+                <div class="indictment-buttons">
+                    <IndictmentLevelButton level="hard" :score="score.hard" />
+                    <IndictmentLevelButton level="medium" :score="score.medium" />
+                    <IndictmentLevelButton level="soft" :score="score.soft" />
                 </div>
             </div>
         </template>

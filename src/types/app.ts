@@ -59,3 +59,8 @@ export interface Score {
     medium: number
     soft: number
 }
+
+export interface IndictmentState {
+    type: Map<"person" | "thesis", boolean>
+    level: Map<"hard" | "medium" | "soft", boolean>
+}

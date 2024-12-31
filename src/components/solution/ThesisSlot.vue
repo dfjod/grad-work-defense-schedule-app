@@ -1,11 +1,16 @@
 <template>
     <td
-        :class="{ indictment: hasIndictment }"
+        :class="{ indictment: indictmentsActive}"
         @mouseover="showIndictment = true"
         @mouseleave="showIndictment = false"
-        @click="handleClick"
     >
-        <ThesisSlotIndictments v-if="hasIndictment" v-show="showIndictment" :object-id="object.id" :object-type="objectType"/>
+        <ThesisSlotIndictments
+            v-if="hasIndictment"
+            v-show="showIndictment"
+            :object-id="object.id"
+            :object-type="objectType"
+            @active-indictments="handleActiveIndictments"
+        />
         {{ object.name }}
     </td>
 </template>
@@ -26,14 +31,15 @@ const { getObjectConstraints } = useSolutionState()
 
 const hasIndictment = ref(false)
 
+const indictmentsActive = ref(false)
+
 const showIndictment = ref(false)
 
-const handleClick = () => {
-    console.log(hasIndictment.value)
-}
+const handleActiveIndictments = ((val: boolean) => {
+    indictmentsActive.value = val
+})
 
-emitter.on(`indictments-loaded`, (val) => {
-    console.log("val ThesisSlot", val)
+emitter.on(`indictments-loaded`, () => {
     const constraints = getObjectConstraints(props.object.id, props.objectType)
     hasIndictment.value = constraints.length > 0
 })

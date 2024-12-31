@@ -1,68 +1,83 @@
 <template>
-    <span class="indictment-popup">
+    <span
+        class="indictment-popup"
+        v-if="showObjectIndictments && (showHardConstraints || showMediumConstraints || showSoftConstraints || showAllConstraints)"
+    >
         <p>Indictments</p>
-        <div v-if="hardConstraintShowed && hardConstraints.length > 0">
-            <p>Hard</p>
-            <ul>
-                <li v-for="constraint of hardConstraints" :key="constraint.name" class="indictment-text">{{ constraint.name }}</li>
-            </ul>
+        <div v-if="showHardConstraints || showMediumConstraints || showSoftConstraints">
+            <div v-show="showHardConstraints">
+                <p>Hard</p>
+                <ul>
+                    <li v-for="constraint of hardConstraints" :key="constraint.name" class="indictment-text">{{
+                        constraint.name }}</li>
+                </ul>
+            </div>
+            <div v-show="showMediumConstraints">
+                <p>Medium</p>
+                <ul>
+                    <li v-for="constraint of mediumConstraints" :key="constraint.name" class="indictment-text">{{
+                        constraint.name }}</li>
+                </ul>
+            </div>
+            <div v-show="showSoftConstraints">
+                <p>Soft</p>
+                <ul>
+                    <li v-for="constraint of softConstraints" :key="constraint.name" class="indictment-text">{{
+                        constraint.name }}</li>
+                </ul>
+            </div>
         </div>
-        <div v-if="mediumConstraintShowed && mediumConstraints.length > 0">
-            <p>Medium</p>
-            <ul>
-                <li v-for="constraint of mediumConstraints" :key="constraint.name" class="indictment-text">{{ constraint.name }}</li>
-            </ul>
-        </div>
-        <div v-if="softConstraintShowed && softConstraints.length > 0">
-            <p>Soft</p>
-            <ul>
-                <li v-for="constraint of softConstraints" :key="constraint.name" class="indictment-text">{{ constraint.name }}</li>
-            </ul>
-        </div>
-        <ul v-if="noneSelected && constraints.length > 0">
-            <li v-for="constraint of constraints" :key="constraint.name" class="indictment-text">{{ constraint.name }}</li>
+        <ul v-if="showAllConstraints">
+            <li v-for="constraint of constraints" :key="constraint.name" class="indictment-text">{{ constraint.name }}
+            </li>
         </ul>
     </span>
 </template>
 
 <script setup lang="ts">
 import type { ConstraintMatch } from '@/types/app'
-import useSolutionState from '@/composables/useSolutionState';
-import { computed, ref } from 'vue'
-import emitter from '@/services/mitt';
+import useSolutionState from '@/composables/useSolutionState'
+import { ref, computed, watch } from 'vue'
+import useIndictmentsState from '@/composables/useIndictmentsState'
 
 const props = defineProps<{
     objectId: number
     objectType: 'person' | 'thesis'
 }>()
 
-const { getObjectConstraints, getTypeOfConstraints } = useSolutionState()
+const emit = defineEmits<{
+    activeIndictments: [hasActiveIndictments: boolean]
+}>()
 
-// Selection
-const hardConstraintShowed = ref(false)
-const mediumConstraintShowed = ref(false)
-const softConstraintShowed = ref(false)
-const noneSelected = computed(() => !hardConstraintShowed.value && !mediumConstraintShowed.value && !softConstraintShowed.value)
+const { getObjectConstraints, getTypeOfConstraints } = useSolutionState()
+const { getTypeIndictmentState, getLevelIndictmentState } = useIndictmentsState()
 
 const constraints = ref<ConstraintMatch[]>(getObjectConstraints(props.objectId, props.objectType))
 const hardConstraints = ref<ConstraintMatch[]>(getTypeOfConstraints('hard', constraints.value))
 const mediumConstraints = ref<ConstraintMatch[]>(getTypeOfConstraints('medium', constraints.value))
 const softConstraints = ref<ConstraintMatch[]>(getTypeOfConstraints('soft', constraints.value))
 
-emitter.on(`toggle-score-hard`, (val) => {
-    console.log('hardConstraintShowedBus', val)
-    hardConstraintShowed.value = val
+const showHardConstraints = computed(() => hardConstraints.value.length > 0 && getLevelIndictmentState('hard'))
+const showMediumConstraints = computed(() => mediumConstraints.value.length > 0 && getLevelIndictmentState('medium'))
+const showSoftConstraints = computed(() => softConstraints.value.length > 0 && getLevelIndictmentState('soft'))
+
+const showObjectIndictments = computed(() => getTypeIndictmentState(props.objectType))
+
+const showAllConstraints = computed(() => {
+    return getLevelIndictmentState('hard') === false
+        && getLevelIndictmentState('medium') === false
+        && getLevelIndictmentState('soft') === false
 })
 
-emitter.on(`toggle-score-medium`, (val) => {
-    console.log('mediumConstraintShowedBus', val)
-    mediumConstraintShowed.value = val
-})
-
-emitter.on(`toggle-score-soft`, (val) => {
-    console.log('softConstraintShowedBus', val)
-    softConstraintShowed.value = val
-})
+// Emit state of active indictments for current component in order to color it red
+watch(
+    () => [showHardConstraints.value, showMediumConstraints.value, showSoftConstraints.value, showObjectIndictments.value, showAllConstraints.value],
+    ([newShowHard, newShowMedium, newShowSoft, newShowObjectIndictments, newShowAllConstraints]: boolean[]) => {
+        const hasActiveIndictments = newShowObjectIndictments && (newShowHard || newShowMedium || newShowSoft || newShowAllConstraints);
+        emit('activeIndictments', hasActiveIndictments);
+    },
+    { immediate: true }
+)
 </script>
 
 <style scoped>
