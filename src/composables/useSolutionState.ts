@@ -1,5 +1,5 @@
 import { reactive, readonly } from 'vue'
-import { type Solution } from '@/types/app'
+import type { Solution, Session } from '@/types/app'
 import {
     mapApiSessions,
     mapApiScore,
@@ -31,7 +31,7 @@ export default () => {
         solution.solved = s.solved
         solution.name = s.name
         solution.score = s.score
-        solution.sessions = s.sessions
+        solution.sessions = s.sessions // TODO: map actual thesis objects in theses list
         solution.persons = s.persons
         solution.theses = s.theses !== null ?  s.theses : []
     }
@@ -135,8 +135,9 @@ export default () => {
         let changed = false;
 
         for (const session of solution.sessions) {
-            const theses = session.theses.toString()
-            const thesesPrevious = session.thesesPrevious.toString()
+            const theses = JSON.stringify(session.theses)
+            const thesesPrevious = JSON.stringify(session.thesesPrevious)
+
             if (theses !== thesesPrevious) {
                 changed = true
                 break
@@ -178,7 +179,7 @@ export default () => {
     }
 
     return {
-        solution: readonly(solution),
+        solution: solution,
         loadSolution,
         loadSolutionApi,
         loadIndictments,

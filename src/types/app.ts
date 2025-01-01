@@ -16,8 +16,12 @@ export interface Session {
     startDate: string
     slotDuration: number
     room: string
-    theses: number[]
-    thesesPrevious: number[]
+    theses: ThesisId[]
+    thesesPrevious: ThesisId[]
+}
+
+export interface ThesisId {
+    id: number
 }
 
 export interface Person {

@@ -31,14 +31,22 @@
             <li v-for="constraint of constraints" :key="constraint.name" class="indictment-text">{{ constraint.name }}
             </li>
         </ul>
+        <div v-if="hasTimeConstraints">
+            <p>Time constraints</p>
+            <ul>
+                <li v-for="constraint of timeConstraints" :key="constraint.id" class="indictment-text">{{ moment(constraint.from, "YYYY-MM-DDTHH:mm:ss").format("MMM D HH:mm") }} - {{ moment(constraint.to, "YYYY-MM-DDTHH:mm:ss").format("MMM D HH:mm") }}</li>
+            </ul>
+        </div>
     </span>
 </template>
 
 <script setup lang="ts">
-import type { ConstraintMatch } from '@/types/app'
+import type { ConstraintMatch, TimeConstraint } from '@/types/app'
 import useSolutionState from '@/composables/useSolutionState'
 import { ref, computed, watch } from 'vue'
 import useIndictmentsState from '@/composables/useIndictmentsState'
+import usePersonState from '@/composables/usePersonState'
+import moment from 'moment'
 
 const props = defineProps<{
     objectId: number
@@ -51,6 +59,7 @@ const emit = defineEmits<{
 
 const { getObjectConstraints, getTypeOfConstraints } = useSolutionState()
 const { getTypeIndictmentState, getLevelIndictmentState } = useIndictmentsState()
+const { getPersonById } = usePersonState()
 
 const constraints = ref<ConstraintMatch[]>(getObjectConstraints(props.objectId, props.objectType))
 const hardConstraints = ref<ConstraintMatch[]>(getTypeOfConstraints('hard', constraints.value))
@@ -62,6 +71,15 @@ const showMediumConstraints = computed(() => mediumConstraints.value.length > 0 
 const showSoftConstraints = computed(() => softConstraints.value.length > 0 && getLevelIndictmentState('soft'))
 
 const showObjectIndictments = computed(() => getTypeIndictmentState(props.objectType))
+
+const timeConstraints = ref<TimeConstraint[] | undefined>(props.objectType === 'person' ? getPersonById(props.objectId)?.timeConstraints : undefined)
+const hasTimeConstraints = computed(() => {
+    if (props.objectType === 'person' && timeConstraints.value) {
+        console.log('Time constraints', timeConstraints.value)
+        return timeConstraints.value && timeConstraints.value.length > 0
+    }
+    return undefined
+})
 
 const showAllConstraints = computed(() => {
     return getLevelIndictmentState('hard') === false

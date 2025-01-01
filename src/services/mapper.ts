@@ -15,6 +15,8 @@ import type {
     Score,
     Session,
     Solution,
+    Thesis,
+    ThesisId,
     TimeConstraint,
 } from '@/types/app'
 
@@ -120,19 +122,19 @@ function mapApiConstraintMatches(constraintMatchesApi: ConstraintMatchApi[]): Co
     return constraintMatches
 }
 
-function mapApiThesisList(thesesApi: ThesisApi[]): number[] {
-    const theses: number[] = []
+function mapApiThesisList(thesesApi: ThesisApi[]): ThesisId[] {
+    const theses = []
 
     for (const thesisApi of thesesApi) {
         const thesis = thesisApi.thesisId
-        theses.push(thesis)
+        theses.push({ id: thesis })
     }
 
     return theses
 }
 
 function mapAppScore(score: Score): string {
-    return `${score.hard}/${score.medium}/${score.soft}`
+    return `${score.hard}hard/${score.medium}medium/${score.soft}soft`
 }
 
 function mapAppSessions(sessions: Session[], solved: boolean): SessionApi[] {
@@ -184,12 +186,12 @@ function mapAppThesisListForSolving(theses: number[]): ThesisApi[] {
 
 function mapAppThesesForSession(
     sessionId: number,
-    thesesSequence: number[],
+    thesesSequence: ThesisId[],
     sessionStartDate: string,
     slotDuration: number,
 ): ThesisApi[] {
     return thesesSequence.map((thesisId, index) => {
-        const thesis = findThesisById(thesisId)
+        const thesis = findThesisById(thesisId.id)
         const previous = index === 0 ? null : thesesSequence[index - 1]
         const next = index === thesesSequence.length - 1 ? null : thesesSequence[index + 1]
         const startsAt = index === 0 ? sessionStartDate : moment(sessionStartDate).add(slotDuration * index, 'm').format("YYYY-MM-DDTHH:mm:ss")

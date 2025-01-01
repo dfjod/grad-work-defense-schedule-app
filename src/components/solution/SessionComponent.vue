@@ -1,16 +1,20 @@
 <script setup lang="ts">
-import type { Session } from '@/types/app';
-import ThesisComponent from '@/components/solution/ThesisComponent.vue';
-import draggableComponent from 'vuedraggable';
-import useSolutionState from '@/composables/useSolutionState';
+import type { Session } from '@/types/app'
+import ThesisComponent from '@/components/solution/ThesisComponent.vue'
+import draggableComponent from 'vuedraggable'
+import useSolutionState from '@/composables/useSolutionState'
+import useThesesState from '@/composables/useThesesState'
+import { computed }  from 'vue'
 
 const props = defineProps<{
     sessionId: number
 }>()
 
 const { getSessionWithId } = useSolutionState()
+const { findThesisById } = useThesesState()
 
-const session: Session = getSessionWithId(props.sessionId)
+
+const session: Session = getSessionWithId(props.sessionId) as Session
 
 const formatDate = (date: string) => {
     const options: Intl.DateTimeFormatOptions = {
@@ -26,12 +30,16 @@ const formatDate = (date: string) => {
 
     return dateString.charAt(0).toUpperCase() + dateString.slice(1)
 }
+
+const handleClick = () => {
+    console.log('Session theses', session.theses)
+}
 </script>
 
 <template>
     <div class="session">
         <div class="meta">
-            <h2 class="title">Session #{{ session.id }}</h2>
+            <h2 class="title" @click="handleClick">Session #{{ session.id }}</h2>
             <div class="details">
                 <div class="date">{{ formatDate(session.startDate) }}</div>
                 <div class="place">
@@ -46,11 +54,23 @@ const formatDate = (date: string) => {
                     <th>Title</th>
                     <th>Supervisor</th>
                     <th>Reviewer</th>
+                    <th>Start</th>
                 </tr>
             </thead>
-            <draggableComponent v-model="session.theses" group="theses" item-key="thesis" tag="tbody">
-                <template #item="{ element: thesis }">
-                    <ThesisComponent :key="thesis" :thesisId="thesis" />
+            <draggableComponent
+                v-model="session.theses"
+                group="theses"
+                item-key="id"
+                tag="tbody"
+            >
+                <template #item="{ element: thesis, index}">
+                    <ThesisComponent
+                        :key="index"
+                        :thesisId="thesis.id"
+                        :session-start="session.startDate"
+                        :index="index"
+                        :slot-duration="session.slotDuration"
+                    />
                 </template>
             </draggableComponent>
         </table>

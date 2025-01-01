@@ -2,21 +2,27 @@
 import ThesisSlot from '@/components/solution/ThesisSlot.vue'
 import usePersonState from '@/composables/usePersonState'
 import useThesesState from '@/composables/useThesesState'
+import type { Person, Thesis } from '@/types/app';
+import moment from 'moment';
+import { ref } from 'vue'
 
 const props = defineProps<{
     thesisId: number
+    sessionStart: string
+    slotDuration: number
+    index: number
 }>()
 
 const { findThesisById } = useThesesState()
 const { getPersonById } = usePersonState()
 
-const thesis = findThesisById(props.thesisId)
+const thesis = ref<Thesis>(findThesisById(props.thesisId))
 
-const author = getPersonById(thesis.author)
+const author = ref<Person>(getPersonById(thesis.value.author))
 
-const reviewer = getPersonById(thesis.reviewer)
+const reviewer = ref<Person>(getPersonById(thesis.value.reviewer))
 
-const supervisor = getPersonById(thesis.supervisor)
+const supervisor = ref<Person>(getPersonById(thesis.value.supervisor))
 </script>
 
 <template>
@@ -25,6 +31,7 @@ const supervisor = getPersonById(thesis.supervisor)
         <ThesisSlot :object="thesis" object-type="thesis" />
         <ThesisSlot :object="supervisor" object-type="person" />
         <ThesisSlot :object="reviewer" object-type="person" />
+        <td>{{ moment(props.sessionStart).add(slotDuration * index, 'm').format("HH:mm") }}</td>
     </tr>
 </template>
 
