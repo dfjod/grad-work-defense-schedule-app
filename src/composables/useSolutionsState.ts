@@ -59,15 +59,16 @@ const solutions = ref<Solution[]>([
 ])
 
 export default () => {
-    function saveSolution(s: Solution) {
-        s.id = s.id || solutions.value.length + 1;
-        s.theses = parseTheses(s.persons);
 
-        const index = solutions.value.findIndex(sol => sol.id === s.id);
+    function saveSolution(s: Solution) {
+        s.id = s.id || solutions.value.length + 1
+        s.theses = parseTheses(s.persons)
+
+        const index = solutions.value.findIndex(sol => sol.id === s.id)
         if (index === -1) {
-            solutions.value.push(s);
+            solutions.value.push(s)
         } else {
-            solutions.value[index] = s;
+            solutions.value[index] = s
         }
     }
 
@@ -80,7 +81,7 @@ export default () => {
     }
 
     function getSolutionById(id: number): Solution | undefined {
-        return solutions.value.find((sol) => sol.id === id);
+        return solutions.value.find((sol) => sol.id === id)
     }
 
     return {

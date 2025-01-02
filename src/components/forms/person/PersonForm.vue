@@ -131,8 +131,8 @@ const handleDeleteTimeConstraint = (timeConstraintId: number) => {
 
 const handleEditPerson = (personToEdit: Person) => {
     console.log("Editing person", person)
+    person.value = JSON.parse(JSON.stringify(personToEdit))
     showForm.value = true
-    person.value = personToEdit
 }
 
 const handleSaveThesis = (thesisId: number) => {

@@ -133,6 +133,7 @@ const persons = ref<Person[]>([
 ])
 
 export default () => {
+
     function savePerson(person: Person) {
         const index = persons.value.findIndex(p => p.id === person.id)
         person.id = persons.value.length ? Math.max(...persons.value.map(p => p.id)) + 1 : 1

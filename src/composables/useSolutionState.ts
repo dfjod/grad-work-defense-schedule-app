@@ -31,7 +31,7 @@ export default () => {
         solution.solved = s.solved
         solution.name = s.name
         solution.score = s.score
-        solution.sessions = s.sessions // TODO: map actual thesis objects in theses list
+        solution.sessions = s.sessions
         solution.persons = s.persons
         solution.theses = s.theses !== null ?  s.theses : []
     }
@@ -65,11 +65,13 @@ export default () => {
 
         let fetchIndictments: IndictmentApi[] = []
 
+        // Indictments not loaded, load them
         if (solution.personIndictments.length === 0 && solution.thesesIndictments.length === 0) {
             console.log('Indictments not loaded, fetching them')
             fetchIndictments = await api.indictments(solution.id)
         }
 
+        // Solution has changed, fetch and load new indictments
         if (solution.changed) {
             console.log('Solution has changed, fetching new indictments')
             // Update previousTheses list
@@ -79,6 +81,7 @@ export default () => {
             fetchIndictments = await api.putandindictments(mapAppSolutionForIndictments(solution))
         }
 
+        // If solution has new indictments, map them, otherwise do nothing
         if (fetchIndictments.length > 0) {
             const mappedIndictments = mapApiIndictments(fetchIndictments)
             solution.personIndictments = mappedIndictments[0] // At index 0 are person indictments
@@ -161,6 +164,7 @@ export default () => {
         return constraints.flat()
     }
 
+    // Helper function
     function getTypeOfConstraints(type: 'hard' | 'medium' | 'soft', constraints: ConstraintMatch[]): ConstraintMatch[] {
         switch (type) {
             case 'hard':

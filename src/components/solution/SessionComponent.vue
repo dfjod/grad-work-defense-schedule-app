@@ -54,7 +54,7 @@ const handleClick = () => {
                     <th>Title</th>
                     <th>Supervisor</th>
                     <th>Reviewer</th>
-                    <th>Start</th>
+                    <th>Slot Start</th>
                 </tr>
             </thead>
             <draggableComponent
