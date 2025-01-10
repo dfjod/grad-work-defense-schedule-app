@@ -1,6 +1,7 @@
 <template>
     <ModalComponent @close-modal="handleCloseModal">
-        <h2>Create a Solution from Scratch</h2>
+        <h2 v-if="solutionProp">Edit Solution</h2>
+        <h2 v-else >Create a Solution from Scratch</h2>
         <form @submit.prevent="handleSave">
             <div class="wrapper">
                 <div class="field">
@@ -14,7 +15,8 @@
                 <div class="field">
                     <SessionForm v-model="solution.sessions" />
                 </div>
-                <BaseButton @click="handleSave" color="green">Save solution</BaseButton>
+                <BaseButton @click="handleSave" color="green">Save Solution</BaseButton>
+                <BaseButton v-if="solution" @click="handleDelete" color="red">Delete Solution</BaseButton>
             </div>
         </form>
     </ModalComponent>
@@ -26,29 +28,30 @@ import ModalComponent from '@/components/ui/ModalComponent.vue'
 import PersonList from '@/components/shared/PersonList.vue'
 import SessionForm from '@/components/forms/solution/SessionForm.vue'
 import BaseButton from '@/components/ui/BaseButton.vue'
-import useSolutionsState from '@/composables/useSolutionsState'
 import { ref, onMounted } from 'vue'
+import useSolutionState from '@/composables/useSolutionState'
 
 const emit = defineEmits<{
     closeModal: []
 }>()
 
 const props = defineProps<{
-    solutionId: number | null
+    solutionProp?: Solution
 }>()
 
-const { saveSolution, getSolutionById } = useSolutionsState()
+const { saveSolutionToStorage, deleteSolutionFromStorage } = useSolutionState()
 
 const solution = ref<Solution>({
     id: null,
     solved: false,
     changed: false,
     name: '',
-    score: '',
+    score: null,
     sessions: [],
     persons: [],
     theses: [],
-    indictments: [],
+    thesesIndictments: [],
+    personIndictments: [],
 })
 
 const solutionPersons = ref<number[]>([])
@@ -66,8 +69,20 @@ function handleClick(person: Person) {
 }
 
 function handleSave() {
-    solution.value.persons = solutionPersons.value
-    saveSolution(solution.value)
+    if (props.solutionProp) {
+        console.log("Updating solution", solution.value)
+        saveSolutionToStorage()
+    } else {
+        console.log("Saving a new solution", solution.value)
+        solution.value.persons = solutionPersons.value
+        saveSolutionToStorage(solution.value)
+    }
+
+    handleCloseModal()
+}
+
+function handleDelete() {
+    deleteSolutionFromStorage()
     handleCloseModal()
 }
 
@@ -76,8 +91,8 @@ function handleCloseModal() {
 }
 
 onMounted(() => {
-    if (props.solutionId) {
-        const solutionToEdit = getSolutionById(props.solutionId)
+    if (props.solutionProp) {
+        const solutionToEdit = props.solutionProp
         solution.value = solutionToEdit
         solutionPersons.value = solutionToEdit.persons
     }

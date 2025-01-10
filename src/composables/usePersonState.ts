@@ -1,142 +1,22 @@
-import { type Person } from '@/types/app'
+import type { Person } from '@/types/app'
 import { ref, readonly } from 'vue'
+import useThesesState from '@/composables/useThesesState'
 
-const persons = ref<Person[]>([
-    {
-        id: 1,
-        name: 'prof. Andris Ambainis',
-        isStudent: false,
-        timeConstraints: [
-            {
-                id: 1,
-                from: '2025-1-2T10:45:00',
-                to: '2025-1-2T23:59:59',
-            },
-        ],
-    },
-    {
-        id: 2,
-        name: 'prof. Juris Borzovs',
-        isStudent: false,
-        timeConstraints: [],
-    },
-    {
-        id: 3,
-        name: 'prof. Leo Seļavo',
-        isStudent: false,
-        timeConstraints: [
-            {
-                id: 2,
-                from: '2025-1-2T09:30:00',
-                to: '2025-1-2T23:59:59',
-            },
-        ],
-    },
-    {
-        id: 4,
-        name: 'doc. Agris Šostaks',
-        isStudent: false,
-        timeConstraints: [
-            {
-                id: 3,
-                from: '2025-1-2T08:45:00',
-                to: '2025-1-2T09:59:59',
-            },
-        ],
-    },
-    {
-        id: 5,
-        name: 'prof. Karlis Podnieks',
-        isStudent: false,
-        timeConstraints: [],
-    },
-    {
-        id: 6,
-        name: 'prof. Laila Niedrīte',
-        isStudent: false,
-        timeConstraints: [
-            {
-                id: 4,
-                from: '2025-1-2T09:30:00',
-                to: '2025-1-2T10:00:00',
-            },
-        ],
-    },
-    {
-        id: 7,
-        name: 'prof. Guntis Bārzdiņš',
-        isStudent: false,
-        timeConstraints: [
-            {
-                id: 5,
-                from: '2025-1-2T10:15:00',
-                to: '2025-1-2T23:59:59',
-            },
-        ],
-    },
-    {
-        id: 8,
-        name: 'Jānis Jaunsudrabiņš',
-        isStudent: true,
-        timeConstraints: [],
-        thesis: 1,
-    },
-    {
-        id: 9,
-        name: 'Kārlis Skalbe',
-        isStudent: true,
-        timeConstraints: [],
-        thesis: 2,
-    },
-    {
-        id: 10,
-        name: 'Rūdolfs Blaumanis',
-        isStudent: true,
-        timeConstraints: [],
-        thesis: 3,
-    },
-    {
-        id: 11,
-        name: 'Alberts Bels',
-        isStudent: true,
-        timeConstraints: [],
-        thesis: 4,
-    },
-    {
-        id: 12,
-        name: 'Vilis Plūdons',
-        isStudent: true,
-        timeConstraints: [],
-        thesis: 5,
-    },
-    {
-        id: 13,
-        name: 'Andrejs Pumpurs',
-        isStudent: true,
-        timeConstraints: [],
-        thesis: 6,
-    },
-    {
-        id: 14,
-        name: 'Aleksandrs Čaks',
-        isStudent: true,
-        timeConstraints: [],
-        thesis: 7,
-    },
-    {
-        id: 15,
-        name: 'Vizma Belševica',
-        isStudent: true,
-        timeConstraints: [],
-        thesis: 8,
-    },
-])
+const STORAGE_KEY = 'persons'
+const COUNTER_KEY = 'person_counter'
+
+const persons = ref<Person[]>([])
 
 export default () => {
 
+    const { deleteThesis, findThesisById } = useThesesState()
+
     function savePerson(person: Person) {
-        const index = persons.value.findIndex(p => p.id === person.id)
-        person.id = persons.value.length ? Math.max(...persons.value.map(p => p.id)) + 1 : 1
+        const index = persons.value.findIndex((p) => p.id === person.id)
+
+        if (!person.id) {
+            person.id = getUniquePersonId()
+        }
 
         if (index === -1) {
             persons.value.push(person)
@@ -153,7 +33,14 @@ export default () => {
             return
         }
 
+        deletePersonFromSolutions(person.id)
+
+        if (person.isStudent && person.thesis) {
+            deleteThesis(person.thesis)
+        }
+
         persons.value.splice(index, 1)
+        console.log(persons.value)
     }
 
     function saveTimeConstraint(person: Person, from: string, to: string) {
@@ -192,6 +79,57 @@ export default () => {
         return persons.value.filter(p => !p.isStudent)
     }
 
+    function getUniquePersonId(): number {
+        let counter = parseInt(localStorage.getItem(COUNTER_KEY) || '0', 10)
+        counter += 1
+        localStorage.setItem(COUNTER_KEY, counter.toString())
+        return counter
+    }
+
+
+    function savePersonsToStorage() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(persons.value));
+    }
+
+
+    function loadPersons() {
+        const storedPersons = localStorage.getItem(STORAGE_KEY)
+
+        if (storedPersons) {
+            persons.value = JSON.parse(storedPersons)
+        }
+    }
+
+    // function deletePersonFromSolutions(personId: number) {
+    //     Object.keys(localStorage).forEach((key) => {
+    //         if (key.startsWith('solution:')) {
+    //             const storedSolution = localStorage.getItem(key)
+
+    //             if (storedSolution) {
+    //                 const solution = JSON.parse(storedSolution) as Solution
+
+    //                 solution.persons = solution.persons.filter((id) => id !== personId)
+
+    //                 solution.theses = solution.theses.filter((thesisId) => {
+    //                     const thesis = findThesisById(thesisId)
+    //                     return thesis && thesis.author !== personId
+    //                 })
+
+    //                 for (const session of solution.sessions) {
+    //                     session.theses = session.theses.filter((thesisId) => {
+    //                         const thesis = findThesisById(thesisId)
+    //                         console.log("removing theses from session", thesis?.id, thesis?.author, personId)
+    //                         return thesis && thesis.author !== personId
+    //                     })
+    //                 }
+
+    //                 solution.changed = true
+    //                 localStorage.setItem(key, JSON.stringify(solution))
+    //             }
+    //         }
+    //     })
+    // }
+
     return {
         persons: readonly(persons),
         savePerson,
@@ -201,5 +139,7 @@ export default () => {
         getStudents,
         getAcademicStaff,
         getPersonById,
+        savePersonsToStorage,
+        loadPersons,
     }
 }

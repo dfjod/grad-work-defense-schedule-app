@@ -3,13 +3,14 @@ import useSolutionState from '@/composables/useSolutionState';
 import SessionComponent from '@/components/solution/SessionComponent.vue';
 import SolutionToolbar from '@/components/solution/SolutionToolbar.vue';
 import { computed } from 'vue';
+import type { Solution } from '@/types/app';
 
 const emit = defineEmits<{
-    editSolution: [solutionId: number]
+    editSolution: [solution: Solution]
 }>()
 
 function handleEditSolution() {
-    emit('editSolution', solution.id)
+    emit('editSolution', solution)
 }
 
 const { solutionLoaded, solution } = useSolutionState()

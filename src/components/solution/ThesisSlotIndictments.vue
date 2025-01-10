@@ -34,7 +34,7 @@
         <div v-if="hasTimeConstraints">
             <p>Time constraints</p>
             <ul>
-                <li v-for="constraint of timeConstraints" :key="constraint.id" class="indictment-text">{{ moment(constraint.from, "YYYY-MM-DDTHH:mm:ss").format("MMM D HH:mm") }} - {{ moment(constraint.to, "YYYY-MM-DDTHH:mm:ss").format("MMM D HH:mm") }}</li>
+                <li v-for="constraint of timeConstraints" :key="constraint.id" class="indictment-text">{{ formatTime(constraint.from) }} - {{ formatTime(constraint.to) }}</li>
             </ul>
         </div>
     </span>
@@ -46,7 +46,7 @@ import useSolutionState from '@/composables/useSolutionState'
 import { ref, computed, watch } from 'vue'
 import useIndictmentsState from '@/composables/useIndictmentsState'
 import usePersonState from '@/composables/usePersonState'
-import moment from 'moment'
+import { formatTime } from '@/services/utils'
 
 const props = defineProps<{
     objectId: number
@@ -75,7 +75,6 @@ const showObjectIndictments = computed(() => getTypeIndictmentState(props.object
 const timeConstraints = ref<TimeConstraint[] | undefined>(props.objectType === 'person' ? getPersonById(props.objectId)?.timeConstraints : undefined)
 const hasTimeConstraints = computed(() => {
     if (props.objectType === 'person' && timeConstraints.value) {
-        console.log('Time constraints', timeConstraints.value)
         return timeConstraints.value && timeConstraints.value.length > 0
     }
     return undefined

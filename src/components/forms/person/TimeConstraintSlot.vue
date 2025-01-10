@@ -1,13 +1,15 @@
 <template>
     <div class="wrapper">
-        <span class="time-constraint">{{ timeConstraint.from }} - {{ timeConstraint.to }}</span>
+        <span class="time-constraint">{{ time }}</span>
         <BaseButton class="time-constraint-delete" @click="handleDeleteTimeConstraint" color="red">Delete</BaseButton>
     </div>
 </template>
 
 <script setup lang="ts">
 import BaseButton from '@/components/ui/BaseButton.vue'
-import type { TimeConstraint } from '@/types/app';
+import type { TimeConstraint } from '@/types/app'
+import { computed } from 'vue'
+import { formatTime } from '@/services/utils'
 
 const props = defineProps<{
     timeConstraint: TimeConstraint
@@ -20,6 +22,10 @@ const emit = defineEmits<{
 const handleDeleteTimeConstraint = () => {
     emit('deleteTimeConstraint', props.timeConstraint.id)
 }
+
+const time = computed(() => {
+    return `${formatTime(props.timeConstraint.from)} - ${formatTime(props.timeConstraint.to)}`
+})
 </script>
 
 <style scoped>

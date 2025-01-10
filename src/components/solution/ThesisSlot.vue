@@ -40,6 +40,7 @@ const handleActiveIndictments = ((val: boolean) => {
 })
 
 emitter.on(`indictments-loaded`, () => {
+    console.log('indictments-loaded event triggered')
     const constraints = getObjectConstraints(props.object.id, props.objectType)
     hasIndictment.value = constraints.length > 0
 })

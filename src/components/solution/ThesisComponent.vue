@@ -31,9 +31,13 @@ const supervisor = ref<Person>(getPersonById(thesis.value.supervisor))
         <ThesisSlot :object="thesis" object-type="thesis" />
         <ThesisSlot :object="supervisor" object-type="person" />
         <ThesisSlot :object="reviewer" object-type="person" />
-        <td>{{ moment(props.sessionStart).add(slotDuration * index, 'm').format("HH:mm") }}</td>
+        <td style="text-align: center; background-color: var(--gray);">{{ moment(props.sessionStart).add(slotDuration * index, 'm').format("HH:mm") }}</td>
     </tr>
 </template>
 
 <style scoped>
+td:last-child {
+    border-bottom-right-radius: 10px;
+    border-top-right-radius: 10px;
+}
 </style>

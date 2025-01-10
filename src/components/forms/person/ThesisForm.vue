@@ -1,10 +1,11 @@
 <template>
-    <div v-if="hasThesis">
+    <div v-if="hasThesis && !showForm">
         <div class="thesis">
             <p>{{ thesis.name }}</p>
             <p>Supervisor: {{ getAcademicStaff().find(staff => staff.id === thesis.supervisor)?.name }}</p>
             <p>Reviewer: {{ getAcademicStaff().find(staff => staff.id === thesis.reviewer)?.name }}</p>
         </div>
+        <BaseButton @click="showForm = true" color="green">Edit Thesis</BaseButton>
     </div>
     <div v-else>
         <BaseButton v-if="!showForm" @click="showForm = true" color="gray">Add Thesis</BaseButton>
@@ -81,7 +82,7 @@ onMounted(() => {
     if (props.person.thesis) {
         const existingThesis = findThesisById(props.person.thesis)
         if (existingThesis) {
-            thesis.value = existingThesis
+            thesis.value = JSON.parse(JSON.stringify(existingThesis))
         } else {
             console.error(`Thesis with id ${props.person.thesis} not found`)
         }

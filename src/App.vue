@@ -1,55 +1,50 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onBeforeMount } from 'vue'
 import SolutionListComponent from '@/components/layout/SolutionListComponent.vue'
 import SolutionComponent from '@/components/layout/SolutionComponent.vue'
 import useSolution from './composables/useSolutionState'
 import { type Solution } from '@/types/app';
-import ImportForm from '@/components/forms/import/ImportForm.vue';
 import PersonForm from './components/forms/person/PersonForm.vue';
 import SolutionForm from './components/forms/solution/SolutionForm.vue';
+import usePersonState from '@/composables/usePersonState'
+import useThesesState from '@/composables/useThesesState'
 
-const { loadSolution } = useSolution()
+const { loadSolutionFromStorage } = useSolution()
 
-const isImportModalOpen = ref<boolean>(false)
 const isCreationModalOpen = ref<boolean>(false)
 const isPersonModalOpen = ref<boolean>(false)
 
-const toEdit = ref<number | null>(null)
+const toEdit = ref<Solution | null>(null)
 
-const handleImprot = (solution: Solution) => {
-    loadSolution(solution)
-    isImportModalOpen.value = false
-}
-
-const handleExport = () => {
-    useSolution().exportSolution()
-}
-
-function handleEditSolution(solutionId: number) {
+function handleEditSolution(solution: Solution) {
     isCreationModalOpen.value = true
-    toEdit.value = solutionId
+    toEdit.value = solution
 }
 
 function handleCloseCreationModal() {
     toEdit.value = null
     isCreationModalOpen.value = false
 }
+
+// Load data from localStorage
+onBeforeMount(() => {
+    usePersonState().loadPersons()
+    useThesesState().loadTheses()
+})
+console.log(toEdit)
 </script>
 
 <template>
     <div class="wrapper">
         <SolutionListComponent
-            @import-modal-open="isImportModalOpen = true"
-            @export-solution="handleExport"
             @manage-persons="isPersonModalOpen = true"
             @create-solution="isCreationModalOpen = true"
-            @load-solution="loadSolution"
+            @load-solution="loadSolutionFromStorage"
         />
         <SolutionComponent class="solution" @edit-solution="handleEditSolution" />
     </div>
-    <ImportForm v-if="isImportModalOpen" @close-modal="isImportModalOpen = false" @submit="handleImprot" />
     <PersonForm v-if="isPersonModalOpen" @close-modal="isPersonModalOpen = false" />
-    <SolutionForm v-if="isCreationModalOpen" @close-modal="handleCloseCreationModal" :solution-id="toEdit" />
+    <SolutionForm v-if="isCreationModalOpen" @close-modal="handleCloseCreationModal" :solution-prop="toEdit" />
 </template>
 
 <style>

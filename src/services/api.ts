@@ -1,5 +1,6 @@
-import type { Indictment, SolutionRequest, SolutionResponse } from "@/types/api"
+import type { IndictmentApi, SolutionApi } from "@/types/api"
 import axios from "axios"
+import type { AxiosError } from "axios"
 
 const apiClient = axios.create({
     baseURL: import.meta.env.VITE_API_URL,
@@ -9,41 +10,66 @@ const apiClient = axios.create({
 })
 
 export default {
-    async solve(data: SolutionRequest) {
-        const requestJson = JSON.stringify(data)
-        return apiClient.post('/defsched/solve', requestJson).then((response) => console.log(response))
-    },
-
-    async solution(id: number): Promise<SolutionResponse> {
+    async solve(data: SolutionApi) {
         try {
-            const response = await apiClient.get<SolutionResponse>(`/defsched/solution?id=${id}`)
-            return response.data
+            console.log("solve data",data)
+            const requestJson = JSON.stringify(data)
+            const response = await apiClient.post('/defsched/solve', requestJson)
+            return response.status
         } catch (error) {
-            console.error(error)
-            return {
-                scheduleId: null,
-                persons: [],
-                sessions: [],
-                thesis: [],
-                score: "",
-                properties: {}
+            if (axios.isAxiosError(error)) {
+                const axiosError = error as AxiosError
+                console.error("API Error: ", axiosError)
+            } else {
+                console.error(error)
             }
+            return null
         }
     },
 
-    async indictments(id: number): Promise<Indictment[]> {
+    async solution(id: number) {
         try {
-            const response = await apiClient.get<Indictment[]>(`/defsched/indictments?id=${id}`)
+            const response = await apiClient.get<SolutionApi>(`/defsched/solution?id=${id}`)
             return response.data
         } catch (error) {
-            console.error(error)
+            if (axios.isAxiosError(error)) {
+                const axiosError = error as AxiosError
+                console.error("API Error: ", axiosError)
+            } else {
+                console.error(error)
+            }
+            return {}
+        }
+    },
+
+    async indictments(id: number) {
+        try {
+            const response = await apiClient.get<IndictmentApi[]>(`/defsched/indictments?id=${id}`)
+            return response.data
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                const axiosError = error as AxiosError
+                console.error("API Error: ", axiosError)
+            } else {
+                console.error(error)
+            }
             return []
         }
     },
 
-    async putandindictments(data: SolutionRequest): Promise<Indictment[]> {
-        const requestJson = JSON.stringify(data)
-        const response = await apiClient.post('/defsched/putandindictments', requestJson)
-        return response.data
+    async putandindictments(data: SolutionApi) {
+        try {
+            const requestJson = JSON.stringify(data)
+            const response = await apiClient.post('/defsched/putandindictments', requestJson)
+            return response.data
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                const axiosError = error as AxiosError
+                console.error("API Error: ", axiosError)
+            } else {
+                console.error(error)
+            }
+            return []
+        }
     }
 }

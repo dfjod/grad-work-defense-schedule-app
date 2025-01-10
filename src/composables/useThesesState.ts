@@ -1,75 +1,26 @@
 import { type Thesis } from "@/types/app"
 import { ref, readonly } from "vue"
 
-const theses = ref<Thesis[]>([
-    {
-        id: 1,
-        name: 'Baltā kvantu kriptogrāfija',
-        author: 8,
-        supervisor: 1,
-        reviewer: 2,
-    },
-    {
-        id: 2,
-        name: 'Programmatūras kvalitātes dzirnavas',
-        author: 9,
-        supervisor: 2,
-        reviewer: 3,
-    },
-    {
-        id: 3,
-        name: 'Kiberfizikālās sistēmas Silmačos',
-        author: 10,
-        supervisor: 3,
-        reviewer: 4,
-    },
-    {
-        id: 4,
-        name: 'Datizrace būrī',
-        author: 11,
-        supervisor: 5,
-        reviewer: 1,
-    },
-    {
-        id: 5,
-        name: 'Mazā Anduļa datu noliktavas',
-        author: 12,
-        supervisor: 6,
-        reviewer: 5,
-    },
-    {
-        id: 6,
-        name: 'Tīklplēsis',
-        author: 13,
-        supervisor: 7,
-        reviewer: 3,
-    },
-    {
-        id: 7,
-        name: 'Neironu skartie',
-        author: 14,
-        supervisor: 7,
-        reviewer: 1,
-    },
-    {
-        id: 8,
-        name: 'Billes datu noliktavas',
-        author: 15,
-        supervisor: 6,
-        reviewer: 4,
-    },
-])
+const STORAGE_KEY = 'theses'
+const COUNTER_KEY = 'theses_counter'
+
+const theses = ref<Thesis[]>([])
 
 export default () => {
     function saveThesis(thesis: Thesis) {
-        const index = theses.value.findIndex(t => t.id === thesis.id)
-        thesis.id = theses.value.length ? Math.max(...theses.value.map(t => t.id)) + 1 : 1
+        const index = theses.value.findIndex((t) => t.id === thesis.id)
+
+        if (!thesis.id) {
+            thesis.id = getUniqueThesisId()
+        }
 
         if (index === -1) {
             theses.value.push(thesis)
         } else {
             theses.value.splice(index, 1, thesis)
         }
+
+        saveThesesToStorage()
 
         return thesis.id
     }
@@ -83,16 +34,39 @@ export default () => {
         }
 
         theses.value.splice(index, 1)
+
+        saveThesesToStorage()
     }
 
     function findThesisById(thesisId: number) {
         return theses.value.find(t => t.id === thesisId)
     }
 
+    function getUniqueThesisId(): number {
+        let counter = parseInt(localStorage.getItem(COUNTER_KEY) || '0', 10)
+        counter += 1
+        localStorage.setItem(COUNTER_KEY, counter.toString())
+        return counter
+    }
+
+    function saveThesesToStorage() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(theses.value));
+    }
+
+    function loadTheses() {
+        const storedTheses = localStorage.getItem(STORAGE_KEY)
+
+        if (storedTheses) {
+            theses.value = JSON.parse(storedTheses)
+        }
+    }
+
     return {
         theses: readonly(theses),
         saveThesis,
         deleteThesis,
-        findThesisById
+        findThesisById,
+        saveThesesToStorage,
+        loadTheses,
     }
 }

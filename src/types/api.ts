@@ -1,46 +1,37 @@
-export interface SolutionRequest {
+export interface SolutionApi {
     scheduleId: number | null
-    persons: Person[]
-    sessions: Session[]
-    thesis: Thesis[] | null
+    persons: PersonApi[]
+    sessions: SessionApi[]
+    thesis: ThesisApi[]
     score: string | null
-    properties: Properties
+    properties: PropertiesApi
 }
 
-interface Properties {
+interface PropertiesApi {
     sessionSize: number
 }
 
-export interface SolutionResponse {
-    scheduleId: number | null
-    persons: Person[]
-    sessions: Session[]
-    thesis: Thesis[]
-    score: string
-    properties: object
-}
-
-export interface Person {
+export interface PersonApi {
     personId: number
     name: string
-    timeConstraints: TimeConstraint[]
+    timeConstraints: TimeConstraintApi[]
 }
 
-export interface TimeConstraint {
+export interface TimeConstraintApi {
     timeConstraintId: number
     from: string
     to: string
 }
 
-export interface Session {
+export interface SessionApi {
     sessionId: number
     room: string
     startingAt: string
     slotDurationMinutes: number
-    thesisList: Thesis[]
+    thesisList: ThesisApi[]
 }
 
-export interface Thesis {
+export interface ThesisApi {
     thesisId: number
     title: string
     author: number
@@ -53,15 +44,15 @@ export interface Thesis {
     cascadeStartsAt: string | null
 }
 
-export interface Indictment {
+export interface IndictmentApi {
     indictedObjectID: number
     indictedObjectClass: string
     score: string
     matchCount: number
-    constraintMatches: ConstraintMatch[]
+    constraintMatches: ConstraintMatchApi[]
 }
 
-export interface ConstraintMatch {
+export interface ConstraintMatchApi {
     constraintName: string
     score: string
 }

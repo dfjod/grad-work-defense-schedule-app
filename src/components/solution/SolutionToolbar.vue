@@ -17,11 +17,10 @@
             <SolutionTitle />
         </template>
         <template #right>
+            <p v-if="solution.changed" style="color: red;">CHANGED</p>
             <BaseButton @click="solveSolution" color="green">Solve</BaseButton>
-            <BaseButton @click="loadSolutionApi" color="gray">Load</BaseButton>
             <BaseButton @click="loadIndictments" color="gray">Indictments</BaseButton>
-            <BaseButton @click="printSolution" color="gray">Print</BaseButton>
-            <BaseButton @click="printSolvePayload" color="gray">Payload</BaseButton>
+            <BaseButton @click="handleSaveSolution" color="green">Save</BaseButton>
             <BaseButton @click="handleEditSolution" color="green">Edit</BaseButton>
         </template>
     </BaseToolbar>
@@ -44,10 +43,14 @@ const emits = defineEmits<{
     editSolution: [solutionId: number]
 }>()
 
-const { solveSolution, loadSolutionApi, loadIndictments, printSolution, printSolvePayload, solution } = useSolutionState()
+const { solveSolution, loadIndictments, solution, saveSolutionToStorage } = useSolutionState()
 
 function handleEditSolution() {
     emits('editSolution', solution.id)
+}
+
+function handleSaveSolution() {
+    saveSolutionToStorage()
 }
 </script>
 

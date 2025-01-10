@@ -10,7 +10,7 @@ const props = defineProps<{
     sessionId: number
 }>()
 
-const { getSessionWithId } = useSolutionState()
+const { getSessionWithId, checkAndSetChangedState } = useSolutionState()
 const { findThesisById } = useThesesState()
 
 
@@ -62,6 +62,7 @@ const handleClick = () => {
                 group="theses"
                 item-key="id"
                 tag="tbody"
+                @change="checkAndSetChangedState"
             >
                 <template #item="{ element: thesis, index}">
                     <ThesisComponent

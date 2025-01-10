@@ -1,12 +1,11 @@
 import type {
-    ConstraintMatch as ConstraintMatchApi,
-    Indictment as IndictmentApi,
-    Person as PersonApi,
-    Session as SessionApi,
-    SolutionRequest,
-    SolutionResponse,
-    Thesis as ThesisApi,
-    TimeConstraint as TimeConstraintApi,
+    ConstraintMatchApi,
+    IndictmentApi,
+    PersonApi,
+    SessionApi,
+    SolutionApi,
+    ThesisApi,
+    TimeConstraintApi,
 } from '@/types/api'
 
 import type {
@@ -24,7 +23,7 @@ import usePersonState from '@/composables/usePersonState'
 import useThesesState from '@/composables/useThesesState'
 import moment from 'moment'
 
-const { getPersonById } = usePersonState()
+const { getPersonById, persons } = usePersonState()
 const { findThesisById } = useThesesState()
 
 // As solutions are managed locally only the session must be mapped from the API
@@ -46,6 +45,7 @@ export function mapApiSessions(sessionsApi: SessionApi[]): Session[] {
     return sessions
 }
 
+// If backend returns no indictments, then it should return empty arrays
 export function mapApiIndictments(indictmentsApi: IndictmentApi[]): Indictment[][] {
     const personIndictments: Indictment[] = []
     const thesesIndictments: Indictment[] = []
@@ -72,20 +72,20 @@ export function mapApiIndictments(indictmentsApi: IndictmentApi[]): Indictment[]
     ]
 }
 
-export function mapAppSolutionForSolving(solution: Solution): SolutionRequest {
+export function mapAppSolutionForSolving(solution: Solution): SolutionApi {
     return {
         scheduleId: solution.id,
         persons: mapAppPersons(solution.persons),
-        sessions: mapAppSessions(solution.sessions, solution.solved),
+        sessions: mapAppSessions(solution.sessions, false),
         thesis: mapAppThesisListForSolving(solution.theses),
-        score: solution.score ? mapAppScore(solution.score) : null,
+        score: null,
         properties: {
             sessionSize: 0,
         },
     }
 }
 
-export function mapAppSolutionForIndictments(solution: Solution): SolutionRequest {
+export function mapAppSolutionForIndictments(solution: Solution): SolutionApi {
     return {
         scheduleId: solution.id,
         persons: mapAppPersons(solution.persons),

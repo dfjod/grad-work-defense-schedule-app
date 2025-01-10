@@ -5,19 +5,14 @@
                 <template #left></template>
                 <template #middle></template>
                 <template #right>
-                    <BaseButton v-if="!showJson && !showForm" @click="showJson = !showJson" color="green">Import JSON</BaseButton>
-                    <BaseButton v-if="!showForm && !showJson" @click="showForm = !showForm" color="green">Add Person</BaseButton>
+                    <BaseButton v-if="!showForm" @click="showForm = !showForm" color="green">Add Person</BaseButton>
                     <div v-if="showForm" class="form-buttons">
                         <BaseButton @click="handleSubmit" color="green">Save</BaseButton>
-                        <BaseButton @click="showForm = !showForm" color="red">Close</BaseButton>
-                    </div>
-                    <div v-if="showJson" class="form-buttons">
-                        <BaseButton @click="handleSubmitJson" color="green">Save</BaseButton>
-                        <BaseButton @click="showJson = !showJson" color="red">Close</BaseButton>
+                        <BaseButton @click="handleClose" color="red">Close</BaseButton>
                     </div>
                 </template>
             </BaseToolbar>
-            <div v-if="!showForm && !showJson" class="person-list-wrapper">
+            <div v-if="!showForm" class="person-list-wrapper">
                 <PersonList v-if="hasPersons" :handle-click-event="handleEditPerson" />
                 <div v-else class="alert">
                     <p>Add a person to the list</p>
@@ -39,16 +34,10 @@
                             @delete-time-constraint="handleDeleteTimeConstraint" />
                     </div>
                     <div v-if="person.isStudent" class="field">
-                        <ThesisForm :person="person" @save-thesis="handleSaveThesis"/>
+                        <ThesisForm :person="person" @save-thesis="handleSaveThesis" />
                     </div>
                 </form>
                 <BaseButton v-if="isSavedPerson" @click="handleDeletePerson" color="red">Delete</BaseButton>
-            </div>
-            <div v-else-if="showJson" class="json-editor-container">
-                <form @submit.prevent="handleSubmitJson">
-                        <json-editor class="json-editor" mode="tree" :main-menu-bar="false" :navigation-bar="true"
-                            v-model="personsJson" />
-                </form>
             </div>
         </div>
     </ModalComponent>
@@ -62,25 +51,15 @@ import ModalComponent from '@/components/ui/ModalComponent.vue'
 import usePersonState from '@/composables/usePersonState'
 import TimeConstraintForm from '@/components/forms/person/TimeConstraintForm.vue'
 import ThesisForm from '@/components/forms/person/ThesisForm.vue'
-import JsonEditor from 'vue3-ts-jsoneditor'
 import { computed, ref } from 'vue'
 import PersonList from '@/components/shared/PersonList.vue'
+import useThesesState from '@/composables/useThesesState'
 
-const { persons, savePerson, deletePerson, saveTimeConstraint, deleteTimeConstraint } = usePersonState()
+const { persons, savePerson, deletePerson, saveTimeConstraint, deleteTimeConstraint, savePersonsToStorage } = usePersonState()
+const { theses, saveThesesToStorage} = useThesesState()
 const hasPersons = computed(() => persons.value.length > 0)
 const isSavedPerson = computed(() => person.value.id !== null)
 const showForm = ref(false)
-const showJson = ref(false)
-
-const personsJson = ref<Person[]>([
-    {
-        id: null,
-        name: 'Example Person',
-        isStudent: false,
-        timeConstraints: [],
-        indictments: [],
-    }
-])
 
 const person = ref<Person>({
     id: null,
@@ -103,20 +82,19 @@ const resetPerson = () => {
 const handleSubmit = () => {
     console.log("Saving person", person.value)
     savePerson(person.value)
+    console.log(JSON.stringify(persons.value))
+    console.log(JSON.stringify(theses.value))
+    savePersonsToStorage()
+    saveThesesToStorage()
     resetPerson()
     showForm.value = false
-}
-
-const handleSubmitJson = () => {
-    console.log("Saving persons", personsJson.value)
-    personsJson.value.forEach(person => savePerson(person))
-    personsJson.value = []
-    showJson.value = false
 }
 
 const handleDeletePerson = () => {
     console.log("Deleting person", person.value)
     deletePerson(person.value)
+    savePersonsToStorage()
+    saveThesesToStorage()
     resetPerson()
     showForm.value = false
 }
@@ -137,6 +115,11 @@ const handleEditPerson = (personToEdit: Person) => {
 
 const handleSaveThesis = (thesisId: number) => {
     person.value.thesis = thesisId
+}
+
+const handleClose = () => {
+    resetPerson()
+    showForm.value = false
 }
 </script>
 

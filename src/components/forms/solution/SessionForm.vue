@@ -4,7 +4,7 @@
             <div class="session" v-for="session in sessions" :key="session.id">
                 <div class="info" @click="handleSessionClick(session)">
                     <p>Session #{{ session.id }}</p>
-                    <p>Start Date: {{ session.startDate }}</p>
+                    <p @click="console.log(session)">Start Date: {{ formatTime(session.startDate) }}</p>
                     <p>Room: {{ session.room }}</p>
                 </div>
                 <div>
@@ -36,8 +36,9 @@
 
 <script setup lang="ts">
 import { type Session } from '@/types/app'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import BaseButton from '@/components/ui/BaseButton.vue'
+import { formatTime } from '@/services/utils'
 
 const sessions = defineModel<Session[]>()
 
@@ -65,9 +66,15 @@ const resetSession = () => {
 }
 
 const saveSession = () => {
-    session.value.id = sessions.value?.length + 1
-    sessions.value?.push(session.value)
-    console.log('Session saved:', sessions.value)
+    if (session.value.id) {
+        const index = sessions.value.findIndex(s => s.id === session.value.id)
+        sessions.value[index] = session.value
+        console.log('Session updated:', sessions.value)
+    } else {
+        session.value.id = sessions.value?.length + 1
+        sessions.value?.push(session.value)
+        console.log('Session saved:', sessions.value)
+    }
     resetSession()
     showForm.value = false
 }
