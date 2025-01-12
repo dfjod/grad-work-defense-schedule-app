@@ -2,13 +2,16 @@
     <ModalComponent>
         <div class="wrapper">
             <BaseToolbar>
-                <template #left></template>
+                <template #left>
+                    <h2 v-if="showForm && !editing">Create a person</h2>
+                    <h2 v-else-if="showForm && editing">Edit a person</h2>
+                </template>
                 <template #middle></template>
                 <template #right>
                     <BaseButton v-if="!showForm" @click="showForm = !showForm" color="green">Add Person</BaseButton>
                     <div v-if="showForm" class="form-buttons">
-                        <BaseButton @click="handleSubmit" color="green">Save</BaseButton>
-                        <BaseButton @click="handleClose" color="red">Close</BaseButton>
+                        <BaseButton @click="handleSavePerson" color="green">Save</BaseButton>
+                        <BaseButton @click="handleClosePerson" color="red">Close</BaseButton>
                     </div>
                 </template>
             </BaseToolbar>
@@ -19,12 +22,12 @@
                 </div>
             </div>
             <div v-else-if="showForm" class="person-form">
-                <form @submit.prevent="handleSubmit" class="person-form">
+                <form @submit.prevent="handleSavePerson" class="person-form">
                     <div class="field">
                         <label for="name">Name</label>
                         <input id="name" name="name" v-model="person.name" />
                     </div>
-                    <div class="field">
+                    <div class="field" v-if="!editing">
                         <label for="isStudent">Is student</label>
                         <input id="isStudent" name="isStudent" type="checkbox" v-model="person.isStudent" />
                     </div>
@@ -34,7 +37,7 @@
                             @delete-time-constraint="handleDeleteTimeConstraint" />
                     </div>
                     <div v-if="person.isStudent" class="field">
-                        <ThesisForm :person="person" @save-thesis="handleSaveThesis" />
+                        <ThesisForm v-model="thesis" />
                     </div>
                 </form>
                 <BaseButton v-if="isSavedPerson" @click="handleDeletePerson" color="red">Delete</BaseButton>
@@ -44,7 +47,7 @@
 </template>
 
 <script setup lang="ts">
-import { type Person } from '@/types/app'
+import type { Thesis, Person } from '@/types/app'
 import BaseButton from '@/components/ui/BaseButton.vue'
 import BaseToolbar from '@/components/ui/BaseToolbar.vue'
 import ModalComponent from '@/components/ui/ModalComponent.vue'
@@ -55,11 +58,12 @@ import { computed, ref } from 'vue'
 import PersonList from '@/components/shared/PersonList.vue'
 import useThesesState from '@/composables/useThesesState'
 
-const { persons, savePerson, deletePerson, saveTimeConstraint, deleteTimeConstraint, savePersonsToStorage } = usePersonState()
-const { theses, saveThesesToStorage} = useThesesState()
+const { persons, savePerson, deletePerson, saveTimeConstraint, deleteTimeConstraint, validatePerson } = usePersonState()
+const { saveThesis, findThesisById, validateThesis } = useThesesState()
 const hasPersons = computed(() => persons.value.length > 0)
 const isSavedPerson = computed(() => person.value.id !== null)
 const showForm = ref(false)
+const editing = ref(false)
 
 const person = ref<Person>({
     id: null,
@@ -69,7 +73,15 @@ const person = ref<Person>({
     indictments: [],
 })
 
-const resetPerson = () => {
+const thesis = ref<Thesis>({
+    id: null,
+    name: '',
+    author: null,
+    supervisor: null,
+    reviewer: null,
+})
+
+const resetFormState = () => {
     person.value = {
         id: null,
         name: '',
@@ -77,25 +89,42 @@ const resetPerson = () => {
         timeConstraints: [],
         indictments: [],
     }
+
+    thesis.value = {
+        id: null,
+        name: '',
+        author: null,
+        supervisor: null,
+        reviewer: null,
+    }
 }
 
-const handleSubmit = () => {
-    console.log("Saving person", person.value)
+const handleSavePerson = () => {
+    if (!validatePerson(person.value)) {
+        return
+    }
+
+    if (person.value.isStudent) {
+        const thesisErrors = validateThesis(thesis.value)
+
+        if (thesisErrors.length > 0) {
+            console.error("A student must have a valid thesis")
+            return
+        }
+
+        const thesisId = saveThesis(thesis.value)
+        person.value.thesis = thesisId
+    }
+
     savePerson(person.value)
-    console.log(JSON.stringify(persons.value))
-    console.log(JSON.stringify(theses.value))
-    savePersonsToStorage()
-    saveThesesToStorage()
-    resetPerson()
+
+    resetFormState()
     showForm.value = false
 }
 
 const handleDeletePerson = () => {
-    console.log("Deleting person", person.value)
     deletePerson(person.value)
-    savePersonsToStorage()
-    saveThesesToStorage()
-    resetPerson()
+    resetFormState()
     showForm.value = false
 }
 
@@ -109,17 +138,17 @@ const handleDeleteTimeConstraint = (timeConstraintId: number) => {
 
 const handleEditPerson = (personToEdit: Person) => {
     console.log("Editing person", person)
+    editing.value = true
+    // Create a deep copy instead of shallow
     person.value = JSON.parse(JSON.stringify(personToEdit))
+    thesis.value = { ...findThesisById(personToEdit.thesis) }
     showForm.value = true
 }
 
-const handleSaveThesis = (thesisId: number) => {
-    person.value.thesis = thesisId
-}
-
-const handleClose = () => {
-    resetPerson()
+const handleClosePerson = () => {
+    resetFormState()
     showForm.value = false
+    editing.value = false
 }
 </script>
 

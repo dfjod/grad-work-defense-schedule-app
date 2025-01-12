@@ -32,6 +32,7 @@ const solution = reactive<Solution>({
 const solvingInProgress = ref(false)
 
 export default () => {
+    // Load solution s into current solution state
     function loadSolution(s: Solution) {
         solution.id = s.id
         solution.solved = s.solved
@@ -44,6 +45,7 @@ export default () => {
         solution.thesesIndictments = s.thesesIndictments
     }
 
+    // Load a solution from the API update the session objects
     async function loadSolutionApi() {
         if (solution.id === null) {
             console.error('Solution ID is null')
@@ -58,6 +60,7 @@ export default () => {
         solution.solved = true
     }
 
+    // Load indictments for the solution
     async function loadIndictments() {
         if (solution.id === null) {
             console.error('Solution not loaded')
@@ -96,7 +99,7 @@ export default () => {
         console.log(solution)
     }
 
-    // GS2
+    // Solve the solution and load the new solution and indictments
     async function solveSolution() {
         if (solvingInProgress.value) {
             solvingInProgress.value = false
@@ -139,16 +142,17 @@ export default () => {
         }
     }
 
-    function printSolvePayload() {
-        console.log(mapAppSolutionForIndictments(solution))
+    function solutionLoaded() {
+        return solution.id !== null
     }
 
-    const solutionLoaded = () => solution.id !== null
-
+    // Change the name of the current solution
     function changeName(newName: string) {
         solution.name = newName
+        // Save the solution to storage
     }
 
+    // Check if the solution has changed and set the changed state
     function checkAndSetChangedState(): void{
         let changed = false;
 
@@ -165,6 +169,7 @@ export default () => {
         solution.changed = changed
     }
 
+    // Get indictments for a specific object
     function getObjectIndictments(objectId: number, objectType: 'person' | 'thesis'): Indictment[] {
         if (objectType === 'person') {
             return solution.personIndictments.filter(indictment => indictment.id === objectId && indictment.class === 'Person')
@@ -173,6 +178,7 @@ export default () => {
         }
     }
 
+    // Get constraints for a specific object
     function getObjectConstraints(objectId: number, objectType: 'person' | 'thesis'): ConstraintMatch[] {
         const indictments = getObjectIndictments(objectId, objectType)
         const constraints = indictments.map(indictment => indictment.constraintMatches)
@@ -193,10 +199,12 @@ export default () => {
         }
     }
 
+    // Get a session with a specific ID
     function getSessionWithId(sessionId: number) {
         return solution.sessions.find(session => session.id === sessionId)
     }
 
+    // Generate an id for a new solution
     function getUniqueSolutionId() {
         let counter = parseInt(localStorage.getItem(COUNTER_KEY) || '0', 10)
         counter += 1
@@ -204,6 +212,7 @@ export default () => {
         return counter
     }
 
+    // Get a list of theses from a list of person ids
     function parseTheses(personIds: number[]): number[] {
         let students = usePersonState().getStudents().filter((student) => {
                 personIds.includes(student.id)
@@ -211,6 +220,7 @@ export default () => {
         return students.map(student => student.thesis)
     }
 
+    // Save a new solution or save the current state of the solution to storage
     function saveSolutionToStorage(solutionToSave: Solution | null = null) {
         if (solutionToSave === null) {
             console.log('Saving solution to storage')
@@ -224,6 +234,7 @@ export default () => {
 
     }
 
+    // Delete the current solution from
     function deleteSolutionFromStorage() {
         const key = `${STORAGE_KEY}:${solution.id}`
         console.log('Deleting solution from storage', key)
@@ -232,6 +243,7 @@ export default () => {
 
     }
 
+    // Load a solution from storage
     function loadSolutionFromStorage(solutionId: number) {
         const storedSolution = localStorage.getItem(`${STORAGE_KEY}:${solutionId}`)
 
@@ -242,6 +254,7 @@ export default () => {
         emitter.emit('indictments-loaded', 'loaded')
     }
 
+    // Reset the solution state
     function resetSolution() {
         solution.id = null
         solution.solved = false
@@ -256,14 +269,13 @@ export default () => {
     }
 
     return {
-        solution: solution,
+        solution,
         loadSolution,
         loadSolutionApi,
         loadIndictments,
         solutionLoaded,
         changeName,
         solveSolution,
-        printSolvePayload,
         getObjectConstraints,
         getTypeOfConstraints,
         getSessionWithId,

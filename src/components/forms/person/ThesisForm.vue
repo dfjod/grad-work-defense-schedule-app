@@ -9,14 +9,14 @@
     </div>
     <div v-else>
         <BaseButton v-if="!showForm" @click="showForm = true" color="gray">Add Thesis</BaseButton>
-        <form v-if="showForm" @submit.prevent="handleThesisSubmit">
+        <form v-if="showForm" @submit.prevent="handleThesisSave">
             <div class="field">
                 <label for="name">Name</label>
-                <input id="name" name="name" v-model="thesis.name" />
+                <input id="name" name="name" v-model="thesisTemp.name" />
             </div>
             <div class="field">
                 <label for="supervisor">Supervisor</label>
-                <select id="supervisor" name="supervisor" v-model="thesis.supervisor">
+                <select id="supervisor" name="supervisor" v-model="thesisTemp.supervisor">
                     <option v-for="staff in getAcademicStaff()" :key="staff.id" :value="staff.id">{{ staff.name }}
                     </option>
                 </select>
@@ -24,13 +24,13 @@
             <div class="field">
 
                 <label for="reviewer">Reviewer</label>
-                <select id="reviewer" name="reviewer" v-model="thesis.reviewer">
+                <select id="reviewer" name="reviewer" v-model="thesisTemp.reviewer">
                     <option v-for="staff in getAcademicStaff()" :key="staff.id" :value="staff.id">{{ staff.name }}
                     </option>
                 </select>
             </div>
             <div class="form-buttons">
-                <BaseButton @click="handleThesisSubmit" color="green">Save Thesis</BaseButton>
+                <BaseButton @click.prevent="handleThesisSave" color="green">Save Thesis</BaseButton>
                 <BaseButton @click="handleCloseThesisForm" color="red">Close Thesis</BaseButton>
             </div>
         </form>
@@ -38,56 +38,43 @@
 </template>
 
 <script setup lang="ts">
-import { type Thesis, type Person } from '@/types/app'
+import { type Thesis } from '@/types/app'
 import BaseButton from '@/components/ui/BaseButton.vue'
 import usePersonState from '@/composables/usePersonState'
 import useThesesState from '@/composables/useThesesState'
-import { computed, ref, onMounted } from 'vue'
+import { computed, ref } from 'vue'
 
-const props = defineProps<{
-    person: Person
-}>()
+const thesis = defineModel<Thesis>()
 
-const emit = defineEmits<{
-    (e: 'saveThesis', thesisId: number): void
-    (e: 'deleteTimeConstraint', timeConstraintId: number): void
-}>()
+const thesisTemp = ref<Thesis>({ ...thesis.value })
 
+const { validateThesis } = useThesesState()
 const { getAcademicStaff } = usePersonState()
-const { saveThesis, findThesisById } = useThesesState()
 
-const hasThesis = computed(() => !!thesis.value.id)
+const hasThesis = computed(() => {
+    return thesis.value.name !== '' && thesis.value.supervisor !== null && thesis.value.reviewer !== null
+})
 const showForm = ref(false)
 
-const thesis = ref<Thesis>({
-    id: null,
-    name: '',
-    author: props.person.id,
-    supervisor: null,
-    reviewer: null,
-    indictments: [],
-})
+// Close the form and merge the temporary thesis with the original thesis
+const handleThesisSave = () => {
+    const thesisErrors = validateThesis(thesisTemp.value)
 
-const handleThesisSubmit = () => {
-    const thesisId = saveThesis(thesis.value)
-    emit('saveThesis', thesisId)
-    showForm.value = false
-}
-
-const handleCloseThesisForm = () => {
-    showForm.value = false
-}
-
-onMounted(() => {
-    if (props.person.thesis) {
-        const existingThesis = findThesisById(props.person.thesis)
-        if (existingThesis) {
-            thesis.value = JSON.parse(JSON.stringify(existingThesis))
-        } else {
-            console.error(`Thesis with id ${props.person.thesis} not found`)
+    if (thesisErrors.length > 0) {
+        for (const error of thesisErrors) {
+            console.error(error)
         }
+    } else {
+        thesis.value = { ...thesisTemp.value }
+        showForm.value = false
     }
-})
+}
+
+// Close the form and reset it to the original thesis
+const handleCloseThesisForm = () => {
+    thesisTemp.value = { ...thesis.value }
+    showForm.value = false
+}
 </script>
 
 <style scoped>

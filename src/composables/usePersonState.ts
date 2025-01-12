@@ -9,9 +9,11 @@ const persons = ref<Person[]>([])
 
 export default () => {
 
-    const { deleteThesis, findThesisById } = useThesesState()
+    const { deleteThesis } = useThesesState()
 
+    // Adds a person to the persons array
     function savePerson(person: Person) {
+        console.log("Saving person", person)
         const index = persons.value.findIndex((p) => p.id === person.id)
 
         if (!person.id) {
@@ -23,9 +25,21 @@ export default () => {
         } else {
             persons.value.splice(index, 1, person)
         }
+
+        savePersonsToStorage()
     }
 
+    // Deletes a person from the persons array
     function deletePerson(person: Person) {
+        console.log("Deleting person", person)
+
+        const solutions = getSolutionsOfPerson(person.id)
+
+        if (solutions.length > 0) {
+            console.error("Person is attached to solutions", solutions)
+            return
+        }
+
         const index = persons.value.findIndex(p => p.id === person.id)
 
         if (index === -1) {
@@ -33,16 +47,42 @@ export default () => {
             return
         }
 
-        deletePersonFromSolutions(person.id)
-
         if (person.isStudent && person.thesis) {
             deleteThesis(person.thesis)
         }
 
         persons.value.splice(index, 1)
-        console.log(persons.value)
+
+        savePersonsToStorage()
     }
 
+    // Get the id and name of solutions that the specified person is attached to
+    function getSolutionsOfPerson(personId: number) {
+        const solutionsAttachedTo: [number, string][] = []
+
+        // Iterate over solutions
+        Object.keys(localStorage).forEach((key) => {
+            if (key.startsWith("solution:")) {
+                const storedSolution = localStorage.getItem(key);
+
+                if (storedSolution) {
+                    const solution = JSON.parse(storedSolution);
+
+                    if (solution.persons.includes(personId)) {
+                        solutionsAttachedTo.push([solution.id, solution.name])
+                    }
+                }
+            }
+        })
+
+        if (solutionsAttachedTo.length > 0) {
+            return solutionsAttachedTo
+        } else {
+            return solutionsAttachedTo
+        }
+    }
+
+    // Saves a time constraint to the person object
     function saveTimeConstraint(person: Person, from: string, to: string) {
         person.timeConstraints.push({
             id: person.timeConstraints.length,
@@ -51,6 +91,7 @@ export default () => {
         })
     }
 
+    // Deletes a time constraint from the person object
     function deleteTimeConstraint(person: Person, timeConstraintId: number) {
         if (person === undefined) {
             console.error('Person not found')
@@ -67,18 +108,22 @@ export default () => {
         person.timeConstraints.splice(index, 1)
     }
 
+    // Get the person object by id
     function getPersonById(id: number): Person | undefined {
         return persons.value.find(p => p.id === id)
     }
 
+    // Get students from the persons array
     function getStudents(): Person[] {
         return persons.value.filter(p => p.isStudent)
     }
 
+    // Get academic staff from the persons array
     function getAcademicStaff() {
         return persons.value.filter(p => !p.isStudent)
     }
 
+    // Generate a unique id for a new person
     function getUniquePersonId(): number {
         let counter = parseInt(localStorage.getItem(COUNTER_KEY) || '0', 10)
         counter += 1
@@ -86,12 +131,12 @@ export default () => {
         return counter
     }
 
-
+    // Save the persons array to local storage
     function savePersonsToStorage() {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(persons.value));
     }
 
-
+    // Load the persons array from local storage
     function loadPersons() {
         const storedPersons = localStorage.getItem(STORAGE_KEY)
 
@@ -100,35 +145,15 @@ export default () => {
         }
     }
 
-    // function deletePersonFromSolutions(personId: number) {
-    //     Object.keys(localStorage).forEach((key) => {
-    //         if (key.startsWith('solution:')) {
-    //             const storedSolution = localStorage.getItem(key)
+    // Validate the person object
+    function validatePerson(person: Person) {
+        if (!person.name) {
+            console.error('Person name is required')
+            return false
+        }
 
-    //             if (storedSolution) {
-    //                 const solution = JSON.parse(storedSolution) as Solution
-
-    //                 solution.persons = solution.persons.filter((id) => id !== personId)
-
-    //                 solution.theses = solution.theses.filter((thesisId) => {
-    //                     const thesis = findThesisById(thesisId)
-    //                     return thesis && thesis.author !== personId
-    //                 })
-
-    //                 for (const session of solution.sessions) {
-    //                     session.theses = session.theses.filter((thesisId) => {
-    //                         const thesis = findThesisById(thesisId)
-    //                         console.log("removing theses from session", thesis?.id, thesis?.author, personId)
-    //                         return thesis && thesis.author !== personId
-    //                     })
-    //                 }
-
-    //                 solution.changed = true
-    //                 localStorage.setItem(key, JSON.stringify(solution))
-    //             }
-    //         }
-    //     })
-    // }
+        return true
+    }
 
     return {
         persons: readonly(persons),
@@ -139,7 +164,7 @@ export default () => {
         getStudents,
         getAcademicStaff,
         getPersonById,
-        savePersonsToStorage,
         loadPersons,
+        validatePerson,
     }
 }
