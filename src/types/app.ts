@@ -11,6 +11,11 @@ export interface Solution {
     personIndictments: Indictment[]
 }
 
+export interface ListSolution {
+    id: number
+    name: string
+}
+
 export interface Session {
     id: number
     startDate: string

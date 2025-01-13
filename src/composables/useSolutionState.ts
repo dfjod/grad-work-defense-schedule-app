@@ -1,5 +1,5 @@
 import { reactive, ref  } from 'vue'
-import type { Solution } from '@/types/app'
+import type { ListSolution, Solution } from '@/types/app'
 import {
     mapApiSessions,
     mapApiScore,
@@ -232,6 +232,7 @@ export default () => {
             localStorage.setItem(`${STORAGE_KEY}:${solutionToSave.id}`, JSON.stringify(solutionToSave))
         }
 
+        emitter.emit('solution-saved', 'saved')
     }
 
     // Delete the current solution from
@@ -240,7 +241,7 @@ export default () => {
         console.log('Deleting solution from storage', key)
         localStorage.removeItem(key)
         resetSolution()
-
+        emitter.emit('solution-deleted', 'deleted')
     }
 
     // Load a solution from storage
@@ -268,6 +269,25 @@ export default () => {
         solution.thesesIndictments = []
     }
 
+    function getSolutionsForList(): ListSolution[] {
+        const solutions: ListSolution[] = []
+
+        Object.keys(localStorage).forEach((key) => {
+            if (key.startsWith('solution:')) {
+                const item = JSON.parse(localStorage.getItem(key) || '{}')
+
+                if (item.id !== undefined && item.name !== undefined) {
+                    solutions.push({
+                        id: item.id,
+                        name: item.name,
+                    })
+                }
+            }
+        })
+
+        return solutions
+    }
+
     return {
         solution,
         loadSolution,
@@ -283,5 +303,6 @@ export default () => {
         saveSolutionToStorage,
         deleteSolutionFromStorage,
         loadSolutionFromStorage,
+        getSolutionsForList,
     }
 }

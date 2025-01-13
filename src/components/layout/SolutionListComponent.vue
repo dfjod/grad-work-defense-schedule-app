@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import BaseButton from '@/components/ui/BaseButton.vue'
 import { computed } from 'vue'
-import type { Solution } from '@/types/app';
+import type { Solution } from '@/types/app'
 import { ref } from 'vue'
+import emitter from '@/services/mitt'
+import useSolutionState from '@/composables/useSolutionState'
 
 const emit = defineEmits<{
     loadSolution: [solutionId: number]
@@ -12,29 +14,9 @@ const emit = defineEmits<{
     createSolution: []
 }>()
 
-const solutions = ref(getSolutionAttributes())
+const { getSolutionsForList } = useSolutionState()
 
-function getSolutionAttributes() {
-  const solutions = [];
-
-  // Iterate through localStorage keys
-  Object.keys(localStorage).forEach((key) => {
-    // Check if the key starts with the "solution:" namespace
-    if (key.startsWith("solution:")) {
-      const item = JSON.parse(localStorage.getItem(key) || "{}");
-
-      // Extract "id" and "name" if they exist
-      if (item.id !== undefined && item.name !== undefined) {
-        solutions.push({
-          id: item.id,
-          name: item.name,
-        });
-      }
-    }
-  });
-
-  return solutions;
-}
+const solutions = ref(getSolutionsForList())
 
 function handleLoad(solution: Solution) {
     emit('loadSolution', solution)
@@ -50,6 +32,14 @@ function handleCreateSolution() {
 
 // TODO: No solutions object, think of other way to check
 const solutionsAvailable = computed(() => solutions.value.length > 0)
+
+emitter.on('solution-saved', () => {
+    solutions.value = getSolutionsForList()
+})
+
+emitter.on('solution-deleted', () => {
+    solutions.value = getSolutionsForList()
+})
 </script>
 
 <template>

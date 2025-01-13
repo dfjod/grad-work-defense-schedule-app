@@ -2,10 +2,10 @@
 import { ref, onBeforeMount } from 'vue'
 import SolutionListComponent from '@/components/layout/SolutionListComponent.vue'
 import SolutionComponent from '@/components/layout/SolutionComponent.vue'
-import useSolution from './composables/useSolutionState'
-import { type Solution } from '@/types/app';
-import PersonForm from './components/forms/person/PersonForm.vue';
-import SolutionForm from './components/forms/solution/SolutionForm.vue';
+import useSolution from '@/composables/useSolutionState'
+import { type Solution } from '@/types/app'
+import PersonForm from '@/components/forms/person/PersonForm.vue'
+import SolutionForm from '@/components/forms/solution/SolutionForm.vue'
 import usePersonState from '@/composables/usePersonState'
 import useThesesState from '@/composables/useThesesState'
 
@@ -31,7 +31,6 @@ onBeforeMount(() => {
     usePersonState().loadPersons()
     useThesesState().loadTheses()
 })
-console.log(toEdit)
 </script>
 
 <template>
