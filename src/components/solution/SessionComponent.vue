@@ -3,16 +3,12 @@ import type { Session } from '@/types/app'
 import ThesisComponent from '@/components/solution/ThesisComponent.vue'
 import draggableComponent from 'vuedraggable'
 import useSolutionState from '@/composables/useSolutionState'
-import useThesesState from '@/composables/useThesesState'
-import { computed }  from 'vue'
 
 const props = defineProps<{
     sessionId: number
 }>()
 
 const { getSessionWithId, checkAndSetChangedState } = useSolutionState()
-const { findThesisById } = useThesesState()
-
 
 const session: Session = getSessionWithId(props.sessionId) as Session
 
@@ -33,6 +29,7 @@ const formatDate = (date: string) => {
 
 const handleClick = () => {
     console.log('Session theses', session.theses)
+    console.log('Session', session)
 }
 </script>
 

@@ -18,7 +18,7 @@
         </template>
         <template #right>
             <p v-if="solution.changed" style="color: red;">CHANGED</p>
-            <BaseButton @click="solveSolution" color="green">Solve</BaseButton>
+            <BaseButton @click="handleSolve" color="green">Solve</BaseButton>
             <BaseButton @click="loadIndictments" color="gray">Indictments</BaseButton>
             <BaseButton @click="handleSaveSolution" color="green">Save</BaseButton>
             <BaseButton @click="handleEditSolution" color="green">Edit</BaseButton>
@@ -43,7 +43,21 @@ const emits = defineEmits<{
     editSolution: [solutionId: number]
 }>()
 
-const { solveSolution, loadIndictments, solution, saveSolutionToStorage } = useSolutionState()
+const { solveSolution, loadIndictments, solution, saveSolutionToStorage, validateSolutionForSolving, solvingInProgress } = useSolutionState()
+
+function handleSolve() {
+    if (!solvingInProgress.value) {
+        const messages = validateSolutionForSolving()
+        if (messages.length > 0) {
+            for (const message of messages) {
+                console.error(message)
+            }
+            return
+        }
+    }
+
+    solveSolution()
+}
 
 function handleEditSolution() {
     emits('editSolution', solution.id)

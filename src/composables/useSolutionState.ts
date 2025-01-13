@@ -12,6 +12,7 @@ import type { IndictmentApi } from '@/types/api'
 import type { Indictment, ConstraintMatch } from '@/types/app'
 import emitter from '@/services/mitt'
 import usePersonState from '@/composables/usePersonState'
+import useThesesState from '@/composables/useThesesState'
 
 const STORAGE_KEY = 'solution'
 const COUNTER_KEY = 'solution_counter'
@@ -214,16 +215,18 @@ export default () => {
 
     // Get a list of theses from a list of person ids
     function parseTheses(personIds: number[]): number[] {
-        let students = usePersonState().getStudents().filter((student) => {
-                personIds.includes(student.id)
+        console.log('Parsing theses from person ids')
+        const involvedStudents = usePersonState().getStudents().filter((student) => {
+                return personIds.includes(student.id)
             })
-        return students.map(student => student.thesis)
+        return involvedStudents.map(student => student.thesis)
     }
 
     // Save a new solution or save the current state of the solution to storage
     function saveSolutionToStorage(solutionToSave: Solution | null = null) {
         if (solutionToSave === null) {
             console.log('Saving solution to storage')
+            solution.theses = parseTheses(solution.persons)
             localStorage.setItem(`${STORAGE_KEY}:${solution.id}`, JSON.stringify(solution))
         } else if (solutionToSave !== null) {
             console.log('Saving new solution to storage')
@@ -288,6 +291,47 @@ export default () => {
         return solutions
     }
 
+    function validateSolution(solutionToValidate: Solution) {
+        const messages = []
+
+        if (solutionToValidate.name === '') {
+            messages.push('Solution name is required')
+        }
+
+        return messages
+    }
+
+    function validateSolutionForSolving() {
+        console.log('Validating solution for solving')
+        const messages = []
+
+        if (solution.persons.length === 0) {
+            messages.push('Solution has no persons')
+        }
+
+        if (solution.theses.length === 0) {
+            messages.push('Solution has no theses')
+        }
+
+        // Check if each thesis has a supervisor and a reviewre present
+        for (const thesisId of solution.theses) {
+            const thesis = useThesesState().findThesisById(thesisId)
+            const author = usePersonState().getPersonById(thesis?.author)
+
+            if (solution.persons.includes(thesis?.supervisor) === false) {
+                const supervisor = usePersonState().getPersonById(thesis?.supervisor)
+                messages.push(`Thesis of ${author?.name} has no supervisor ${supervisor.name}`)
+            }
+
+            if (solution.persons.includes(thesis?.reviewer) === false) {
+                const reviewer = usePersonState().getPersonById(thesis?.reviewer)
+                messages.push(`Thesis of ${author?.name} has no supervisor ${reviewer.name}`)
+            }
+        }
+
+        return messages
+    }
+
     return {
         solution,
         loadSolution,
@@ -304,5 +348,8 @@ export default () => {
         deleteSolutionFromStorage,
         loadSolutionFromStorage,
         getSolutionsForList,
+        validateSolution,
+        validateSolutionForSolving,
+        solvingInProgress,
     }
 }

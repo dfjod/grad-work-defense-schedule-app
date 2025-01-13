@@ -1,7 +1,7 @@
 <template>
     <ModalComponent @close-modal="handleCloseModal">
-        <h2 v-if="solutionProp">Edit Solution</h2>
-        <h2 v-else >Create a Solution from Scratch</h2>
+        <h2 v-if="solutionProp" @click="console.log(solution)">Edit Solution</h2>
+        <h2 v-else @click="console.log(solution)">Create a Solution from Scratch</h2>
         <form @submit.prevent="handleSave">
             <div class="wrapper">
                 <div class="field">
@@ -15,7 +15,7 @@
                 <div class="field">
                     <SessionForm v-model="solution.sessions" />
                 </div>
-                <BaseButton @click="handleSave" color="green">Save Solution</BaseButton>
+                <BaseButton @click.prevent="handleSave" color="green">Save Solution</BaseButton>
                 <BaseButton v-if="solution" @click="handleDelete" color="red">Delete Solution</BaseButton>
             </div>
         </form>
@@ -39,7 +39,7 @@ const props = defineProps<{
     solutionProp?: Solution
 }>()
 
-const { saveSolutionToStorage, deleteSolutionFromStorage } = useSolutionState()
+const { saveSolutionToStorage, deleteSolutionFromStorage, validateSolution } = useSolutionState()
 
 const solution = ref<Solution>({
     id: null,
@@ -54,27 +54,33 @@ const solution = ref<Solution>({
     personIndictments: [],
 })
 
-const solutionPersons = ref<number[]>([])
-
 function colorSelected(person: Person): string | null {
-    return solutionPersons.value.includes(person.id) ? 'light-gray' : null
+    return solution.value.persons.includes(person.id) ? 'light-gray' : null
 }
 
 function handleClick(person: Person) {
-    if (!solutionPersons.value.includes(person.id)) {
-        solutionPersons.value.push(person.id)
+    if (!solution.value.persons.includes(person.id)) {
+        solution.value.persons.push(person.id)
     } else {
-        solutionPersons.value = solutionPersons.value.filter(pId => pId !== person.id)
+        solution.value.persons = solution.value.persons.filter(pId => pId !== person.id)
     }
 }
 
 function handleSave() {
+    const messages = validateSolution(solution.value)
+
+    if (messages.length > 0) {
+        for (const message of messages) {
+            console.error(message)
+        }
+        return
+    }
+
     if (props.solutionProp) {
         console.log("Updating solution", solution.value)
         saveSolutionToStorage()
     } else {
         console.log("Saving a new solution", solution.value)
-        solution.value.persons = solutionPersons.value
         saveSolutionToStorage(solution.value)
     }
 
@@ -94,7 +100,6 @@ onMounted(() => {
     if (props.solutionProp) {
         const solutionToEdit = props.solutionProp
         solution.value = solutionToEdit
-        solutionPersons.value = solutionToEdit.persons
     }
 })
 </script>
