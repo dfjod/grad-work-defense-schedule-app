@@ -1,4 +1,4 @@
-import { reactive, ref  } from 'vue'
+import { reactive, ref } from 'vue'
 import type { ListSolution, Solution } from '@/types/app'
 import {
     mapApiSessions,
@@ -9,7 +9,7 @@ import {
 } from '@/services/mapper'
 import api from '@/services/api'
 import type { IndictmentApi } from '@/types/api'
-import type { Indictment, ConstraintMatch } from '@/types/app'
+import type { ConstraintMatch } from '@/types/app'
 import emitter from '@/services/mitt'
 import usePersonState from '@/composables/usePersonState'
 import useThesesState from '@/composables/useThesesState'
@@ -90,8 +90,6 @@ export default () => {
 
             solution.personIndictments = mappedIndictments[0] // At index 0 are person indictments
             solution.thesesIndictments = mappedIndictments[1] // At index 1 are thesis indictments
-
-            emitter.emit('indictments-loaded', 'loaded')
         }
         // Indictments are up to date and solution has not changed
         else {
@@ -131,7 +129,6 @@ export default () => {
                 const indictment = mapApiIndictments(await api.indictments(solutionIdForServer))
                 solution.personIndictments = indictment[0]
                 solution.thesesIndictments = indictment[1]
-                emitter.emit('indictments-loaded', 'loaded')
             }
         }
 
@@ -168,41 +165,6 @@ export default () => {
         }
 
         solution.changed = changed
-    }
-
-    // Get indictments for a specific object
-    function getObjectIndictments(objectId: number, objectType: 'person' | 'thesis'): Indictment[] {
-        if (objectType === 'person') {
-            return solution.personIndictments.filter(indictment => indictment.id === objectId && indictment.class === 'Person')
-        } else {
-            return solution.thesesIndictments.filter(indictment => indictment.id === objectId && indictment.class === 'Thesis')
-        }
-    }
-
-    // Get constraints for a specific object
-    function getObjectConstraints(objectId: number, objectType: 'person' | 'thesis'): ConstraintMatch[] {
-        const indictments = getObjectIndictments(objectId, objectType)
-        const constraints = indictments.map(indictment => indictment.constraintMatches)
-        return constraints.flat()
-    }
-
-    // Helper function
-    function getTypeOfConstraints(type: 'hard' | 'medium' | 'soft', constraints: ConstraintMatch[]): ConstraintMatch[] {
-        switch (type) {
-            case 'hard':
-                return constraints.filter(constraint => constraint.score.hard < 0)
-            case 'medium':
-                return constraints.filter(constraint => constraint.score.medium < 0)
-            case 'soft':
-                return constraints.filter(constraint => constraint.score.soft < 0)
-            default:
-                return []
-        }
-    }
-
-    // Get a session with a specific ID
-    function getSessionWithId(sessionId: number) {
-        return solution.sessions.find(session => session.id === sessionId)
     }
 
     // Generate an id for a new solution
@@ -255,7 +217,6 @@ export default () => {
             console.log('Loading solution from storage')
             loadSolution(JSON.parse(storedSolution))
         }
-        emitter.emit('indictments-loaded', 'loaded')
     }
 
     // Reset the solution state
@@ -340,9 +301,6 @@ export default () => {
         solutionLoaded,
         changeName,
         solveSolution,
-        getObjectConstraints,
-        getTypeOfConstraints,
-        getSessionWithId,
         checkAndSetChangedState,
         saveSolutionToStorage,
         deleteSolutionFromStorage,

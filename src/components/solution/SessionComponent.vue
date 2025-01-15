@@ -3,14 +3,15 @@ import type { Session } from '@/types/app'
 import ThesisComponent from '@/components/solution/ThesisComponent.vue'
 import draggableComponent from 'vuedraggable'
 import useSolutionState from '@/composables/useSolutionState'
+import { computed } from 'vue';
 
 const props = defineProps<{
     sessionId: number
 }>()
 
-const { getSessionWithId, checkAndSetChangedState } = useSolutionState()
+const { checkAndSetChangedState, solution } = useSolutionState()
 
-const session: Session = getSessionWithId(props.sessionId) as Session
+const session = computed<Session>(() => solution.sessions.find(session => session.id === props.sessionId))
 
 const formatDate = (date: string) => {
     const options: Intl.DateTimeFormatOptions = {
@@ -28,7 +29,7 @@ const formatDate = (date: string) => {
 }
 
 const handleClick = () => {
-    console.log('Session theses', session.theses)
+    console.log('Session theses', session.value.theses)
     console.log('Session', session)
 }
 </script>

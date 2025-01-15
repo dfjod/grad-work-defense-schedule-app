@@ -1,7 +1,7 @@
 <template>
     <span
         class="indictment-popup"
-        v-if="showObjectIndictments && (showHardConstraints || showMediumConstraints || showSoftConstraints || showAllConstraints)"
+        v-if="showObjectIndictments && (showHardConstraints || showMediumConstraints || showSoftConstraints)"
     >
         <p>Indictments</p>
         <div v-if="showHardConstraints || showMediumConstraints || showSoftConstraints">
@@ -27,10 +27,6 @@
                 </ul>
             </div>
         </div>
-        <ul v-if="showAllConstraints">
-            <li v-for="constraint of constraints" :key="constraint.name" class="indictment-text">{{ constraint.name }}
-            </li>
-        </ul>
         <div v-if="hasTimeConstraints">
             <p>Time constraints</p>
             <ul>
@@ -57,17 +53,26 @@ const emit = defineEmits<{
     activeIndictments: [hasActiveIndictments: boolean]
 }>()
 
-const { getObjectConstraints, getTypeOfConstraints } = useSolutionState()
+const { solution } = useSolutionState()
 const { getTypeIndictmentState, getLevelIndictmentState } = useIndictmentsState()
 const { getPersonById } = usePersonState()
 
-const constraints = ref<ConstraintMatch[]>(getObjectConstraints(props.objectId, props.objectType))
-const hardConstraints = ref<ConstraintMatch[]>(getTypeOfConstraints('hard', constraints.value))
-const mediumConstraints = ref<ConstraintMatch[]>(getTypeOfConstraints('medium', constraints.value))
-const softConstraints = ref<ConstraintMatch[]>(getTypeOfConstraints('soft', constraints.value))
+const constraints = computed<ConstraintMatch[]>(() => {
+    console.log('Getting constraints')
+    const indictmetns = props.objectType === 'person' ? solution.personIndictments : solution.thesesIndictments
+    const filtered = indictmetns.filter(indictment => indictment.id === props.objectId)
+    const constraints = filtered.flatMap(indictment => indictment.constraintMatches)
+    return constraints
+
+})
+const hardConstraints = computed<ConstraintMatch[]>(() => constraints.value.filter(constraint => constraint.score.hard < 0))
+const mediumConstraints = computed<ConstraintMatch[]>(() => constraints.value.filter(constraint => constraint.score.medium < 0))
+const softConstraints = computed<ConstraintMatch[]>(() => constraints.value.filter(constraint => constraint.score.soft < 0))
 
 const showHardConstraints = computed(() => hardConstraints.value.length > 0 && getLevelIndictmentState('hard'))
+
 const showMediumConstraints = computed(() => mediumConstraints.value.length > 0 && getLevelIndictmentState('medium'))
+
 const showSoftConstraints = computed(() => softConstraints.value.length > 0 && getLevelIndictmentState('soft'))
 
 const showObjectIndictments = computed(() => getTypeIndictmentState(props.objectType))
@@ -80,18 +85,19 @@ const hasTimeConstraints = computed(() => {
     return undefined
 })
 
-const showAllConstraints = computed(() => {
-    return getLevelIndictmentState('hard') === false
-        && getLevelIndictmentState('medium') === false
-        && getLevelIndictmentState('soft') === false
-})
-
 // Emit state of active indictments for current component in order to color it red
 watch(
-    () => [showHardConstraints.value, showMediumConstraints.value, showSoftConstraints.value, showObjectIndictments.value, showAllConstraints.value],
-    ([newShowHard, newShowMedium, newShowSoft, newShowObjectIndictments, newShowAllConstraints]: boolean[]) => {
-        const hasActiveIndictments = newShowObjectIndictments && (newShowHard || newShowMedium || newShowSoft || newShowAllConstraints);
-        emit('activeIndictments', hasActiveIndictments);
+    () => ({
+        showHard: showHardConstraints.value,
+        showMedium: showMediumConstraints.value,
+        showSoft: showSoftConstraints.value,
+        showObjectIndictments: showObjectIndictments.value,
+        constraints: constraints.value,
+    }),
+    ({ showHard, showMedium, showSoft, showObjectIndictments }) => {
+        const hasActiveIndictments = showObjectIndictments && (showHard || showMedium || showSoft )
+
+        emit('activeIndictments', hasActiveIndictments)
     },
     { immediate: true }
 )
