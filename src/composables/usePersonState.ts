@@ -27,6 +27,8 @@ export default () => {
         }
 
         savePersonsToStorage()
+
+        return person.id
     }
 
     // Deletes a person from the persons array
@@ -34,9 +36,15 @@ export default () => {
         console.log("Deleting person", person)
 
         const solutions = getSolutionsOfPerson(person.id)
+        const theses = getThesesOfPerson(person.id)
 
         if (solutions.length > 0) {
             console.error("Person is attached to solutions", solutions)
+            return
+        }
+
+        if(theses.length > 0) {
+            console.error("Person is attached to theses", theses)
             return
         }
 
@@ -80,6 +88,15 @@ export default () => {
         } else {
             return solutionsAttachedTo
         }
+    }
+
+    // Get theses that are attached to the specified person
+    function getThesesOfPerson(personId: number) {
+        return useThesesState().theses.value.filter(thesis => {
+            const isSupervisor = thesis.supervisor === personId
+            const isReviewer = thesis.reviewer === personId
+            return isSupervisor || isReviewer
+        })
     }
 
     // Saves a time constraint to the person object

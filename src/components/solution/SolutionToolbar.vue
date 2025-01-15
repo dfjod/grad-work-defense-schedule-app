@@ -18,7 +18,8 @@
         </template>
         <template #right>
             <p v-if="solution.changed" style="color: red;">CHANGED</p>
-            <BaseButton @click="handleSolve" color="green">Solve</BaseButton>
+            <BaseButton v-if="!solvingInProgress" @click="handleSolve" color="green">Solve</BaseButton>
+            <BaseButton v-if="solvingInProgress" @click="handleSolve" color="red">Stop</BaseButton>
             <BaseButton @click="loadIndictments" color="gray">Indictments</BaseButton>
             <BaseButton @click="handleSaveSolution" color="green">Save</BaseButton>
             <BaseButton @click="handleEditSolution" color="green">Edit</BaseButton>

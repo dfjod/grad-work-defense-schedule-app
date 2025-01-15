@@ -112,11 +112,16 @@ const handleSavePerson = () => {
             return
         }
 
+        const personId = savePerson(person.value)
+
+        thesis.value.author = personId
+
         const thesisId = saveThesis(thesis.value)
         person.value.thesis = thesisId
+    } else {
+        savePerson(person.value)
     }
 
-    savePerson(person.value)
 
     resetFormState()
     showForm.value = false

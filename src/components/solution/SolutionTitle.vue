@@ -33,6 +33,7 @@ const handleSave = () => {
 }
 
 const toggleEdit = () => {
+    solutionName.value = solution.name
     edit.value = !edit.value
 }
 </script>
