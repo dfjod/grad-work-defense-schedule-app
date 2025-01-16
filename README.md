@@ -2,16 +2,12 @@
 
 Follow the steps below to set up and run the application in development mode.
 
----
-
 ## Prerequisites
 
 Before starting, ensure you have the following installed:
 
 - [Docker](https://www.docker.com/)
 - [pnpm](https://pnpm.io/) (Package Manager)
-
----
 
 ## Backend Setup
 
@@ -23,8 +19,6 @@ Before starting, ensure you have the following installed:
   ```sh
   docker run --rm -it -p 8082:8080 ghcr.io/agrissh/combopt2024:latest
   ```
-
----
 
 ## Frontend Setup
 1. **Create a `.env` file in the project's root directory with the following content**:
@@ -40,26 +34,18 @@ Before starting, ensure you have the following installed:
   pnpm run dev
   ```
 
----
-
 # Accesing the Application
 Once the application is running, you can access it by navigating to the URL provided by the development server:
 ```txt
 http://localhost:8080
 ```
 
----
-
 # Additional Notes
 - Ensure the backend container is running before starting the frontend.
 - If you encounter any issues, verify that the ports (8082 for the backend and 8080 for the frontend) are not being used by other applications.
 
----
-
 # Test Data
 To set up the test data, you need to manually add variables to your browser's local storage. Follow the steps below to configure the necessary data:
-
----
 
 ## Add Counters
 Create the following variables in your browser's local storage with the specified values:
@@ -67,8 +53,6 @@ Create the following variables in your browser's local storage with the specifie
 - `person_counter`: `15`
 - `solution_counter`: `1`
 - `theses_counter`: `8`
-
----
 
 ## Add `persons` Data
 Create a `persons` variable in your browser's local storage and set it to the following JSON:
@@ -205,8 +189,6 @@ Create a `persons` variable in your browser's local storage and set it to the fo
 ]
 ```
 
----
-
 ## Add `theses` Data
 Create a theses variable in your browser's local storage and set it to the following JSON:
 ```json
@@ -269,8 +251,6 @@ Create a theses variable in your browser's local storage and set it to the follo
   }
 ]
 ```
-
----
 
 ## Add `solution:1` Data
 Create a solution:1 variable in your browser's local storage and set it to the following JSON:
