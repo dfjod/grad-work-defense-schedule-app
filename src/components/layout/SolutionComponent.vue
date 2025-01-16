@@ -23,7 +23,7 @@ const solutionScore = computed(() => {
 
 <template>
     <div v-if="!solutionLoaded()" class="not-selected">
-        Import a solution to get started
+        Select or create a solution to get started
     </div>
     <div v-else class="selected">
         <SolutionToolbar :score="solutionScore" @edit-solution="handleEditSolution"/>
